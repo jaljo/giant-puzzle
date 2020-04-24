@@ -19,5 +19,12 @@ const Tile = ({
 }) =>
     <div data-is="tile">
       {`(${x}, ${y})`}
-      {char && char.name}
+      {char && <Character {...char} />}
     </div>
+
+const Character = ({
+  name,
+}) =>
+  <div data-is="character">
+    {name}
+  </div>
