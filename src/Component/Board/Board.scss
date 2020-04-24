@@ -1,0 +1,19 @@
+div[data-is="main-board"] {
+  width: 600px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  border: 1px red dotted;
+
+  section[data-is="line"] {
+    flex: 1;
+    border: 1px blue dotted;
+    display: flex;
+    flex-direction: row;
+
+    div[data-is="tile"] {
+      flex: 1;
+      border: 1px black dashed;
+    }
+  }
+}
