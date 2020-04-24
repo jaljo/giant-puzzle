@@ -6,7 +6,15 @@ import {
 
 export const MAIN_CHARACTER = {
   id: 'main-character',
-  name: 'fuck'
+  image: 'https://image.flaticon.com/icons/svg/2754/2754522.svg',
+}
+
+export const GUARDIAN_REGULAR = {
+  image: 'https://image.flaticon.com/icons/svg/562/562802.svg',
+}
+
+export const GUARDIAN_REVERSE = {
+  image: 'https://image.flaticon.com/icons/svg/2699/2699064.svg',
 }
 
 const INITIAL_STATE = {
@@ -56,7 +64,7 @@ const INITIAL_STATE = {
       }, {
         x: 2,
         y: 4,
-        char: null,
+        char: GUARDIAN_REVERSE,
         locked: false,
       }, {
         x: 3,
@@ -172,7 +180,7 @@ const INITIAL_STATE = {
         }, {
           x: 2,
           y: 0,
-          char: null,
+          char: GUARDIAN_REGULAR,
           locked: false,
         }, {
           x: 3,
@@ -190,7 +198,7 @@ const INITIAL_STATE = {
 }
 
 export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
-export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
+export const MOVE_MAIN_CHARACTER = '@giant-puzzle/Board/MOVE_MAIN_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
 
 // arrowKeyPressed :: direction
@@ -199,9 +207,9 @@ export const arrowKeyPressed = direction => ({
   direction,
 })
 
-// moveCharacter :: String -> Coordinates -> Action
-export const moveCharacter = charcaterId => coordinates => ({
-  type: MOVE_CHARACTER,
+// moveMainCharacter :: String -> Coordinates -> Action
+export const moveMainCharacter = charcaterId => coordinates => ({
+  type: MOVE_MAIN_CHARACTER,
   charcaterId,
   coordinates,
 })
@@ -215,19 +223,20 @@ export default createReducer(INITIAL_STATE, {
     meh: false,
   }),
 
-  [MOVE_CHARACTER]: (state, { charcaterId, coordinates }) => ({
+  [MOVE_MAIN_CHARACTER]: (state, { charcaterId, coordinates }) => ({
     ...state,
     lines: state.lines.map(
-      line => line.map(tile => tile.x === coordinates.x && tile.y === coordinates.y
-        ? {
-          ...tile,
-          char: MAIN_CHARACTER,
-        }
-        : {
-          ...tile,
-          char: null,
-        }
-      )
+      line => line.map(tile => ({
+        ...tile,
+        // move main character on the target slide, remove it from the initial slide
+        // dont do anything for tiles with other characters on
+        char: (tile.x === coordinates.x && tile.y === coordinates.y)
+          ? MAIN_CHARACTER
+          : (tile.char && tile.char.id === MAIN_CHARACTER.id)
+            ? null
+            : tile.char
+        ,
+      }))
     ),
   }),
 

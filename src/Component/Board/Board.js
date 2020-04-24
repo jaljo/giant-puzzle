@@ -29,8 +29,8 @@ const Tile = ({
   </div>
 
 const Character = ({
-  name,
+  image,
 }) =>
   <div data-is="character">
-    <img src="https://image.flaticon.com/icons/svg/2754/2754522.svg" alt="fuck" />
+    <img src={image} alt="icon" />
   </div>

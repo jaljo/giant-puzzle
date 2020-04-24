@@ -1,5 +1,5 @@
 div[data-is="main-board"] {
-  width: 600px;
+  width: 500px;
   height: 600px;
   display: flex;
   flex-direction: column;
@@ -23,8 +23,6 @@ div[data-is="main-board"] {
 }
 
 div[data-is="character"] {
-  background-color: teal;
-
   img {
     width: 100px;
     height: 100px;

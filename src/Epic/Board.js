@@ -22,7 +22,7 @@ import {
   arrowKeyPressed,
   MAIN_CHARACTER,
   meh,
-  moveCharacter,
+  moveMainCharacter,
   ARROW_KEY_PRESSED,
 } from './../Redux/State/Board'
 
@@ -87,7 +87,7 @@ const moveMainCharacterEpic = (action$, state$) =>
     map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board.lines)),
     map(ifElse(
       allPass([isNotOutOfBounds, isFreeOfAnyCharacter, isNotLocked]),
-      o(moveCharacter(MAIN_CHARACTER.id), tileToCoordinates),
+      o(moveMainCharacter(MAIN_CHARACTER.id), tileToCoordinates),
       meh,
     )),
   )
