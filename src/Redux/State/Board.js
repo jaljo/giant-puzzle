@@ -228,9 +228,10 @@ export const requestCharacterMove = (characterId, direction) => ({
   direction,
 })
 
-export const moveCharacter = characterId => coordinates => ({
+export const moveCharacter = (characterId, direction) => coordinates => ({
   type: MOVE_CHARACTER,
   characterId,
+  direction,
   coordinates,
 })
 

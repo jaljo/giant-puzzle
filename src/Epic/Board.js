@@ -1,6 +1,6 @@
 import { fromEvent } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, ignoreElements, tap, filter, withLatestFrom } from 'rxjs/operators'
+import { map, debounceTime, ignoreElements, tap, filter, withLatestFrom } from 'rxjs/operators'
 import { findTileByCoordinates, findTileWithCharacter } from './../Util'
 import {
   __,
@@ -29,6 +29,8 @@ import {
   meh,
   moveCharacter,
   requestCharacterMove,
+  GUARDIAN_REGULAR,
+  GUARDIAN_REVERSE,
 } from './../Redux/State/Board'
 
 // isArrowKeyPressed :: [String] -> KeyboardEvent -> Boolean
@@ -70,15 +72,15 @@ const isFreeOfAnyCharacter = o(isNil, prop('char'))
 // isNotLocked :: Tile -> Boolean
 const isNotLocked = complement(prop('locked'))
 
-// moveMainCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
-const moveMainCharacterEpic = (action$, state$) =>
+// moveMainCharacterEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
+const moveMainCharacterEpic = action$ =>
   action$.pipe(
     ofType(ARROW_KEY_PRESSED),
     // @TODO inject characters id rather than using them directly
     map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
   )
 
-// moveCharacterEpic
+// moveCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
 const moveCharacterEpic = (action$, state$) =>
   action$.pipe(
     ofType(REQUEST_CHARACTER_MOVE),
@@ -105,16 +107,41 @@ const moveCharacterEpic = (action$, state$) =>
     withLatestFrom(action$),
     map(([ tile, action ]) => ifElse(
       allPass([isNotOutOfBounds, isFreeOfAnyCharacter, isNotLocked]),
-      o(moveCharacter(action.characterId), tileToCoordinates),
+      o(moveCharacter(action.characterId, action.direction), tileToCoordinates),
       meh,
     )(tile)),
   )
 
-const moveRegularGuardianEpic = (action$, state$) =>
+// mainCharacterHasMoved :: Action -> Boolean
+const mainCharacterHasMoved = action => action.characterId === MAIN_CHARACTER.id
+
+// moveRegularGuardianEpic
+const moveRegularGuardianEpic = action$ =>
   action$.pipe(
     ofType(MOVE_CHARACTER),
-    tap(console.warn),
-    ignoreElements(),
+    filter(mainCharacterHasMoved),
+    // @TODO inject characters id rather than using them directly
+    map(action => requestCharacterMove(GUARDIAN_REGULAR.id, action.direction)),
+  )
+
+// getOppositeDirection :: String -> String
+const getOppositeDirection = direction => prop(direction, {
+  up: 'down',
+  down: 'up',
+  right: 'left',
+  left: 'right',
+})
+
+const moveReverseGuardianEpic = action$ =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    filter(mainCharacterHasMoved),
+    map(pipe(
+      prop('direction'),
+      getOppositeDirection,
+      // @TODO inject characters id rather than using them directly
+      direction => requestCharacterMove(GUARDIAN_REVERSE.id, direction),
+    )),
   )
 
 export default combineEpics(
@@ -122,4 +149,5 @@ export default combineEpics(
   moveMainCharacterEpic,
   moveCharacterEpic,
   moveRegularGuardianEpic,
+  moveReverseGuardianEpic,
 )
