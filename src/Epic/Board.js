@@ -1,6 +1,6 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, debounceTime, ignoreElements, tap, filter, withLatestFrom, mergeMap } from 'rxjs/operators'
+import { map, debounceTime, ignoreElements, tap, filter, withLatestFrom, mergeMap, takeUntil } from 'rxjs/operators'
 import { findTileByCoordinates, findTileWithCharacter } from './../Util'
 import {
   __,
@@ -37,6 +37,8 @@ import {
   GUARDIAN_REVERSE,
   nextCoordinatesObtained,
   NEXT_COORDINATES_OBTAINED,
+  GAME_OVER,
+  gameOver,
 } from './../Redux/State/Board'
 
 // isMainCharacterMove :: Action -> Boolean
@@ -153,6 +155,7 @@ const obtainNextCoordinatesEpic = (action$, state$) =>
 const requestMainCharacterMoveEpic = action$ =>
   action$.pipe(
     ofType(ARROW_KEY_PRESSED),
+    takeUntil(action$.ofType(GAME_OVER)),
     // @TODO inject characters id rather than using them directly
     map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
   )
@@ -203,12 +206,29 @@ const moveGuardianEpic = action$ =>
     mergeMap(rmap(moveCharacterOrMeh)),
   )
 
+// gameOverEpic :: Epic -> Observable Action GAME_OVER
+const gameOverEpic = action$ =>
+  zip(
+    action$.pipe(
+      ofType(NEXT_COORDINATES_OBTAINED),
+      filter(isMainCharacterMove),
+    ),
+    action$.pipe(
+      ofType(NEXT_COORDINATES_OBTAINED),
+      filter(isReverseGuardianMove),
+    ),
+  ).pipe(
+    filter(complement(apply(haveNotTheSameDestination))),
+    map(gameOver),
+  )
+
 export default combineEpics(
+  gameOverEpic,
   keyEventToMoveActionEpic,
-  requestMainCharacterMoveEpic,
+  moveGuardianEpic,
+  moveMainCharacterEpic,
   obtainNextCoordinatesEpic,
+  requestMainCharacterMoveEpic,
   requestRegularGuardianMoveEpic,
   requestReverseGuardianMoveEpic,
-  moveMainCharacterEpic,
-  moveGuardianEpic,
 )

@@ -1,7 +1,5 @@
 import {
   createReducer,
-  findTileWithCharacter,
-  findTileByCoordinates,
 } from '../../Util'
 import {
   find,
@@ -33,6 +31,7 @@ const findCharacter = id => find(propEq('id', id), CHARACTER_MAP)
 
 const INITIAL_STATE = {
   meh: false,
+  gameOver: false,
   lines: [
     // l6
     [
@@ -216,6 +215,8 @@ export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOV
 export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_OBTAINED'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
+export const GAME_OVER = '@giant-puzzle/Board/GAME_OVER'
+export const RETRY = '@giant-puzzle/Board/RETRY'
 
 // arrowKeyPressed :: direction
 export const arrowKeyPressed = direction => ({
@@ -223,19 +224,22 @@ export const arrowKeyPressed = direction => ({
   direction,
 })
 
+// requestCharacterMove :: (String, String) -> Action
 export const requestCharacterMove = (characterId, direction) => ({
   type: REQUEST_CHARACTER_MOVE,
   characterId,
   direction,
 })
 
-export const nextCoordinatesObtained = (characterId, direction, targetTile = null) => ({
+// nextCoordinatesObtained :: (String, String, Tile) -> Action
+export const nextCoordinatesObtained = (characterId, direction, targetTile) => ({
   type: NEXT_COORDINATES_OBTAINED,
   characterId,
   direction,
   targetTile,
 })
 
+// moveCharacter :: (String, String -> Coordinates) -> Action
 export const moveCharacter = (characterId, direction, coordinates) => ({
   type: MOVE_CHARACTER,
   characterId,
@@ -248,6 +252,10 @@ export const meh = characterId => ({
   type: MEH,
   characterId,
 })
+
+export const gameOver = () => ({ type: GAME_OVER })
+
+export const retry = () => ({ type: RETRY })
 
 export default createReducer(INITIAL_STATE, {
   [ARROW_KEY_PRESSED]: state => ({
@@ -268,7 +276,14 @@ export default createReducer(INITIAL_STATE, {
   [MEH]: state => ({
     ...state,
     meh: true,
-  })
+  }),
+
+  [GAME_OVER]: state => ({
+    ...state,
+    gameOver: true,
+  }),
+
+  [RETRY]: () => INITIAL_STATE,
 })
 
 // move character on the target slide, remove it from the initial slide

@@ -4,6 +4,8 @@ import './Board.css'
 export default ({
   lines,
   meh,
+  retry,
+  gameOver,
 }) =>
   <main>
     <div data-is="main-board">
@@ -14,7 +16,11 @@ export default ({
       )}
     </div>
 
+    <button onClick={retry}>RETRY</button>
+
     {meh && 'Cant move there, asshat'}
+
+    {gameOver && <p className="game-over">GAME OVER</p>}
   </main>
 
 const Tile = ({
