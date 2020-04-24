@@ -213,6 +213,7 @@ const INITIAL_STATE = {
 
 export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
 export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOVE'
+export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_OBTAINED'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
 
@@ -228,15 +229,25 @@ export const requestCharacterMove = (characterId, direction) => ({
   direction,
 })
 
-export const moveCharacter = (characterId, direction) => coordinates => ({
+export const nextCoordinatesObtained = (characterId, direction, targetTile = null) => ({
+  type: NEXT_COORDINATES_OBTAINED,
+  characterId,
+  direction,
+  targetTile,
+})
+
+export const moveCharacter = (characterId, direction, coordinates) => ({
   type: MOVE_CHARACTER,
   characterId,
   direction,
   coordinates,
 })
 
-// meh :: () -> Action
-export const meh = () => ({ type: MEH })
+// meh :: String -> Action
+export const meh = characterId => ({
+  type: MEH,
+  characterId,
+})
 
 export default createReducer(INITIAL_STATE, {
   [ARROW_KEY_PRESSED]: state => ({

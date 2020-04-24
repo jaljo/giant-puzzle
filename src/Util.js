@@ -9,6 +9,7 @@ import {
   prop,
   propOr,
   reject,
+  defaultTo,
 } from 'ramda'
 
 // createReducer :: (State, Object) -> (State, Action) -> State
@@ -36,10 +37,11 @@ const findTileInLine = coord => pipe(
   reject(isEmpty),
 )
 
-// findTileByCoordinates :: Coordinates -> [[Tile]] -> Maybe Tile
+// findTileByCoordinates :: Coordinates -> [[Tile]] -> Tile
 export const findTileByCoordinates = coord => pipe(
   map(findTileInLine(coord)),
   reject(isEmpty),
   flatten,
   head,
+  defaultTo({ x: null, y: null, char: null, locked: true })
 )
