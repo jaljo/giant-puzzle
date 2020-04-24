@@ -14,10 +14,19 @@ div[data-is="main-board"] {
     div[data-is="tile"] {
       flex: 1;
       border: 1px black dashed;
+
+      &.is-locked {
+        background-color: black;
+      }
     }
   }
 }
 
 div[data-is="character"] {
   background-color: teal;
+
+  img {
+    width: 100px;
+    height: 100px;
+  }
 }

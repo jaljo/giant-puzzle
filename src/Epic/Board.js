@@ -1,22 +1,17 @@
 import { fromEvent } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
 import { map, ignoreElements, tap, filter, withLatestFrom } from 'rxjs/operators'
+import { findTileByCoordinates, findTileWithCharacter } from './../Util'
 import {
   __,
   cond,
   dec,
   dissoc,
   evolve,
-  filter as rfilter,
-  flatten,
-  head,
   inc,
   includes,
-  isEmpty,
-  map as rmap,
   pipe,
   prop,
-  reject,
   o,
   complement,
   isNil,
@@ -24,17 +19,11 @@ import {
   allPass,
 } from 'ramda'
 import {
-  up,
-  down,
-  left,
-  right,
-  UP,
-  DOWN,
-  LEFT,
-  RIGHT,
+  arrowKeyPressed,
   MAIN_CHARACTER,
   meh,
   moveCharacter,
+  ARROW_KEY_PRESSED,
 } from './../Redux/State/Board'
 
 // isArrowKeyPressed :: [String] -> KeyboardEvent -> Boolean
@@ -43,45 +32,12 @@ const isArrowKeyPressed = keyMap => pipe(
   includes(__, keyMap),
 )
 
-// keyEventToMoveActionEpic :: Epic -> Observable Action *
+// keyEventToMoveActionEpic :: Epic -> Observable Action ARROW_KEY_PRESSED
 const keyEventToMoveActionEpic = (action$, state$, { keyMap }) =>
   fromEvent(window, 'keyup').pipe(
     filter(isArrowKeyPressed(keyMap)),
-    map(cond([
-      [event => event.key === 'ArrowUp', up],
-      [event => event.key === 'ArrowDown', down],
-      [event => event.key === 'ArrowLeft', left],
-      [event => event.key === 'ArrowRight', right],
-    ])),
+    map(o(arrowKeyPressed, prop('key'))),
   )
-
-// findCharacterInLine :: String -> [Tile] -> [Tile]
-const findCharacterInLine = characterId => pipe(
-  rfilter(tile => tile.char !== null && tile.char.id === characterId),
-  reject(isEmpty),
-)
-
-// findTileWithCharacter :: String -> [[Tile]] -> Tile
-const findTileWithCharacter = characterId => pipe(
-  rmap(findCharacterInLine(characterId)),
-  reject(isEmpty),
-  flatten,
-  head,
-)
-
-// findTileInLine :: Coordinates -> [Tile] -> [Tile]
-const findTileInLine = coord => pipe(
-  rfilter(tile => tile.x === coord.x && tile.y === coord.y),
-  reject(isEmpty),
-)
-
-// findTileByCoordinates :: Coordinates -> [[Tile]] -> Maybe Tile
-const findTileByCoordinates = coord => pipe(
-  rmap(findTileInLine(coord)),
-  reject(isEmpty),
-  flatten,
-  head,
-)
 
 // toLeft :: Tile -> Coordinates
 const toLeft = evolve({ x: dec })
@@ -92,8 +48,8 @@ const toDown = evolve({ y: dec })
 // tileToCoordinates :: Tile -> Coordinates
 const tileToCoordinates = dissoc('char')
 
-// actionIs :: String -> [Any, Action] -> Boolean
-const actionIs = actionType => ([ _, action ]) => action.type === actionType
+// directionIs :: String -> [Any, Action] -> Boolean
+const directionIs = key => ([ _, action ]) => action.direction === key
 
 // isNotOutOfBounds :: Maybe Tile -> Boolean
 const isNotOutOfBounds = complement(isNil)
@@ -108,27 +64,27 @@ const isNotLocked = complement(prop('locked'))
 // @TODO inject characters id rather than using them directly
 const moveMainCharacterEpic = (action$, state$) =>
   action$.pipe(
-    ofType(UP, DOWN, LEFT, RIGHT),
+    ofType(ARROW_KEY_PRESSED),
     withLatestFrom(state$),
     // find the tile where the main character is
     // Observable [Action, State] -> Observable Tile
-    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board)),
+    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board.lines)),
     withLatestFrom(action$),
     // compute target coordinates
     // Observable [Tile, Action] -> Observable Coordinates
     map(pipe(
       cond([
-        [actionIs(UP), ([ tile ]) => toUp(tile)],
-        [actionIs(DOWN), ([ tile ]) => toDown(tile)],
-        [actionIs(LEFT), ([ tile ]) => toLeft(tile)],
-        [actionIs(RIGHT), ([ tile ]) => toRight(tile)],
+        [directionIs('ArrowUp'), ([ tile ]) => toUp(tile)],
+        [directionIs('ArrowDown'), ([ tile ]) => toDown(tile)],
+        [directionIs('ArrowLeft'), ([ tile ]) => toLeft(tile)],
+        [directionIs('ArrowRight'), ([ tile ]) => toRight(tile)],
       ]),
       tileToCoordinates,
     )),
     withLatestFrom(state$),
     // find the tile matching the target coordinates (if any)
     // Observable [Coordinates, State] -> Observable [Maybe Tile]
-    map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board)),
+    map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board.lines)),
     map(ifElse(
       allPass([isNotOutOfBounds, isFreeOfAnyCharacter, isNotLocked]),
       o(moveCharacter(MAIN_CHARACTER.id), tileToCoordinates),
