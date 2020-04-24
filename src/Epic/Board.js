@@ -5,6 +5,7 @@ import { findTileByCoordinates, findTileWithCharacter } from './../Util'
 import {
   __,
   allPass,
+  apply,
   complement,
   cond,
   dec,
@@ -13,14 +14,14 @@ import {
   inc,
   includes,
   isNil,
+  map as rmap,
   o,
   omit,
+  or,
+  path,
   pipe,
   prop,
   replace,
-  or,
-  path,
-  both,
   toLower,
 } from 'ramda'
 import {
@@ -37,6 +38,11 @@ import {
   nextCoordinatesObtained,
   NEXT_COORDINATES_OBTAINED,
 } from './../Redux/State/Board'
+
+// isMainCharacterMove :: Action -> Boolean
+const isMainCharacterMove = action => action.characterId === MAIN_CHARACTER.id
+const isRegularGuardianMove = action => action.characterId === GUARDIAN_REGULAR.id
+const isReverseGuardianMove = action => action.characterId === GUARDIAN_REVERSE.id
 
 // isArrowKeyPressed :: [String] -> KeyboardEvent -> Boolean
 const isArrowKeyPressed = keyMap => pipe(
@@ -62,6 +68,14 @@ const toRight = evolve({ x: inc })
 const toUp = evolve({ y: inc })
 const toDown = evolve({ y: dec })
 
+// getOppositeDirection :: String -> String
+const getOppositeDirection = direction => prop(direction, {
+  up: 'down',
+  down: 'up',
+  right: 'left',
+  left: 'right',
+})
+
 // tileToCoordinates :: Maybe Tile -> Maybe Coordinates
 const tileToCoordinates = omit(['char', 'locked'])
 
@@ -83,30 +97,27 @@ const isNotGuarded = pipe(
 // isNotLocked :: Tile -> Boolean
 const isNotLocked = complement(prop('locked'))
 
-// requestMainCharacterMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
-const requestMainCharacterMoveEpic = action$ =>
-  action$.pipe(
-    ofType(ARROW_KEY_PRESSED),
-    // @TODO inject characters id rather than using them directly
-    map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
-  )
+// tileIsFree :: Tile :: Boolean
+const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
 
-const moveMainCharacterEpic = action$ =>
-  action$.pipe(
-    ofType(NEXT_COORDINATES_OBTAINED),
-    filter(isMainCharacterMove),
-    map(ifElse(
-      o(allPass([isNotOutOfBounds, isNotLocked, isNotGuarded]), prop('targetTile')),
-      action => moveCharacter(
-        action.characterId,
-        action.direction,
-        tileToCoordinates(action.targetTile)
-      ),
-      o(meh, prop('characterId')),
-    ))
-  )
+// haveNotTheSameDestination :: (Action.NEXT_COORDINATES_OBTAINED, Action.NEXT_COORDINATES_OBTAINED) -> Boolean
+const haveNotTheSameDestination = (a, b) => or(
+  a.targetTile.x !== b.targetTile.x,
+  a.targetTile.y !== b.targetTile.y,
+)
 
-// obtainNextCoordinatesEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
+// moveCharacterOrMeh :: Action.NEXT_COORDINATES_OBTAINED -> Action.MOVE_CHARACTER Action.MEH
+const moveCharacterOrMeh = ifElse(
+  o(tileIsFree, prop('targetTile')),
+  action => moveCharacter(
+    action.characterId,
+    action.direction,
+    tileToCoordinates(action.targetTile)
+  ),
+  o(meh, prop('characterId')),
+)
+
+// obtainNextCoordinatesEpic :: Epic -> Observable Action NEXT_COORDINATES_OBTAINED
 const obtainNextCoordinatesEpic = (action$, state$) =>
   action$.pipe(
     ofType(REQUEST_CHARACTER_MOVE),
@@ -138,12 +149,23 @@ const obtainNextCoordinatesEpic = (action$, state$) =>
     )),
   )
 
-// isMainCharacterMove :: Action -> Boolean
-const isMainCharacterMove = action => action.characterId === MAIN_CHARACTER.id
-const isRegularGuardianMove = action => action.characterId === GUARDIAN_REGULAR.id
-const isReverseGuardianMove = action => action.characterId === GUARDIAN_REVERSE.id
+// requestMainCharacterMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
+const requestMainCharacterMoveEpic = action$ =>
+  action$.pipe(
+    ofType(ARROW_KEY_PRESSED),
+    // @TODO inject characters id rather than using them directly
+    map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
+  )
 
-// requestRegularGuardianMoveEpic
+// moveMainCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
+const moveMainCharacterEpic = action$ =>
+  action$.pipe(
+    ofType(NEXT_COORDINATES_OBTAINED),
+    filter(isMainCharacterMove),
+    map(moveCharacterOrMeh),
+  )
+
+// requestRegularGuardianMoveEpic :: Epic -> REQUEST_CHARACTER_MOVE
 const requestRegularGuardianMoveEpic = action$ =>
   action$.pipe(
     ofType(MOVE_CHARACTER),
@@ -152,14 +174,7 @@ const requestRegularGuardianMoveEpic = action$ =>
     map(action => requestCharacterMove(GUARDIAN_REGULAR.id, action.direction)),
   )
 
-// getOppositeDirection :: String -> String
-const getOppositeDirection = direction => prop(direction, {
-  up: 'down',
-  down: 'up',
-  right: 'left',
-  left: 'right',
-})
-
+// requestReverseGuardianMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
 const requestReverseGuardianMoveEpic = action$ =>
   action$.pipe(
     ofType(MOVE_CHARACTER),
@@ -172,33 +187,8 @@ const requestReverseGuardianMoveEpic = action$ =>
     )),
   )
 
-// const willNotCollideWithTheOtherGuardian =
+// moveGuardianEpic :: Epic -> [Observable Action *]
 const moveGuardianEpic = action$ =>
-  action$.pipe(
-    ofType(NEXT_COORDINATES_OBTAINED),
-    filter(complement(isMainCharacterMove)),
-    map(ifElse(
-      o(allPass([isNotOutOfBounds, isNotLocked, isNotGuarded]), prop('targetTile')),
-      action => moveCharacter(
-        action.characterId,
-        action.direction,
-        tileToCoordinates(action.targetTile)
-      ),
-      o(meh, prop('characterId')),
-    )),
-    // tap(console.warn),
-    // ignoreElements(),
-  )
-
-const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
-
-//
-const haveNotTheSameDestination = (a, b) => or(
-  a.targetTile.x !== b.targetTile.x,
-  a.targetTile.y !== b.targetTile.y,
-)
-
-const test = action$ =>
   zip(
     action$.pipe(
       ofType(NEXT_COORDINATES_OBTAINED),
@@ -209,37 +199,8 @@ const test = action$ =>
       filter(isReverseGuardianMove),
     ),
   ).pipe(
-    tap(([ a, b ]) => console.warn(haveNotTheSameDestination(a,b))),
-    filter(([ a, b ]) => haveNotTheSameDestination(a,b)),
-    mergeMap(([ regularGuardianAction, reverseGuardianAction ]) => [
-      // regualarGuardian
-      ifElse(
-        // both(
-          o(tileIsFree, prop('targetTile')),
-        //   () => haveNotTheSameDestination(regularGuardianAction, reverseGuardianAction),
-        // ),
-        action => moveCharacter(
-          action.characterId,
-          action.direction,
-          tileToCoordinates(action.targetTile)
-        ),
-        o(meh, prop('characterId')),
-      )(regularGuardianAction),
-      // reverseGuardian
-      ifElse(
-        // both(
-          o(tileIsFree, prop('targetTile')),
-        //   () => haveNotTheSameDestination(regularGuardianAction, reverseGuardianAction),
-        // ),
-        action => moveCharacter(
-          action.characterId,
-          action.direction,
-          tileToCoordinates(action.targetTile)
-        ),
-        o(meh, prop('characterId')),
-      )(reverseGuardianAction),
-    ]),
-    // ignoreElements(),
+    filter(apply(haveNotTheSameDestination)),
+    mergeMap(rmap(moveCharacterOrMeh)),
   )
 
 export default combineEpics(
@@ -248,9 +209,6 @@ export default combineEpics(
   obtainNextCoordinatesEpic,
   requestRegularGuardianMoveEpic,
   requestReverseGuardianMoveEpic,
-
   moveMainCharacterEpic,
-  // moveGuardianEpic,
-
-  test,
+  moveGuardianEpic,
 )
