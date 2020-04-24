@@ -1,4 +1,3 @@
-import Dog from './Dog'
 import { tap, pipe } from 'ramda'
 import { combineReducers } from 'redux'
 import Board from './Board'
@@ -21,6 +20,5 @@ export const debug = reducer => (state = reducer(), action = {}) => pipe(
 
 // State :: (State, Action *) -> State
 export default combineReducers({
-  Dog,
   Board,
 })

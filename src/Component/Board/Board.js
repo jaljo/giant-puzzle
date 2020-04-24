@@ -12,7 +12,6 @@ export default ({
     )}
   </div>
 
-
 const Tile = ({
   x,
   y,
