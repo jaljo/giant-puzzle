@@ -15,7 +15,9 @@ export default ({
 const Tile = ({
   x,
   y,
+  char,
 }) =>
     <div data-is="tile">
       {`(${x}, ${y})`}
+      {char && char.name}
     </div>

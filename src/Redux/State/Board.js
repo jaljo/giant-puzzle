@@ -53,6 +53,16 @@ const INITIAL_STATE = [
   ],
 ]
 
+export const UP = '@giant-puzzle/Board/UP'
+export const DOWN = '@giant-puzzle/Board/DOWN'
+export const LEFT = '@giant-puzzle/Board/LEFT'
+export const RIGHT = '@giant-puzzle/Board/RIGHT'
+
+export const up = () => ({ type: UP })
+export const down = () => ({ type: DOWN })
+export const left = () => ({ type: LEFT })
+export const right = () => ({ type: RIGHT })
+
 export default createReducer(INITIAL_STATE, {
 
 })
