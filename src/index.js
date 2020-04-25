@@ -8,7 +8,7 @@ import { default as mainReducer, debug } from './Redux/State'
 
 const epicMiddleware = createEpicMiddleware({
   dependencies: {
-    fetchDog: () => fetch('https://dog.ceo/api/breeds/image/random'),
+    keyMap: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
   },
 });
 const middleware     = applyMiddleware(epicMiddleware);
