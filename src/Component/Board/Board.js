@@ -24,13 +24,10 @@ export default ({
   </main>
 
 const Tile = ({
-  x,
-  y,
   char,
   locked,
 }) =>
   <div data-is="tile" className={`${locked ? 'is-locked' : ''}`}>
-    {`(${x}, ${y})`}
     {char && <Character {...char} />}
   </div>
 

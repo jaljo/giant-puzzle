@@ -1,6 +1,6 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, debounceTime, ignoreElements, tap, filter, withLatestFrom, mergeMap, takeUntil } from 'rxjs/operators'
+import { map, filter, withLatestFrom, mergeMap } from 'rxjs/operators'
 import { findTileByCoordinates, findTileWithCharacter } from './../Util'
 import {
   __,
@@ -10,6 +10,7 @@ import {
   cond,
   dec,
   evolve,
+  head,
   ifElse,
   inc,
   includes,
@@ -26,19 +27,18 @@ import {
 } from 'ramda'
 import {
   ARROW_KEY_PRESSED,
-  MAIN_CHARACTER,
-  MOVE_CHARACTER,
-  REQUEST_CHARACTER_MOVE,
-  arrowKeyPressed,
-  meh,
-  moveCharacter,
-  requestCharacterMove,
   GUARDIAN_REGULAR,
   GUARDIAN_REVERSE,
-  nextCoordinatesObtained,
+  MAIN_CHARACTER,
+  MOVE_CHARACTER,
   NEXT_COORDINATES_OBTAINED,
-  GAME_OVER,
+  REQUEST_CHARACTER_MOVE,
+  arrowKeyPressed,
   gameOver,
+  meh,
+  moveCharacter,
+  nextCoordinatesObtained,
+  requestCharacterMove,
 } from './../Redux/State/Board'
 
 // isMainCharacterMove :: Action -> Boolean
@@ -56,7 +56,10 @@ const isArrowKeyPressed = keyMap => pipe(
 const keyEventToMoveActionEpic = (action$, state$, { keyMap }) =>
   fromEvent(window, 'keyup').pipe(
     filter(isArrowKeyPressed(keyMap)),
+    withLatestFrom(state$),
+    filter(([ _, state ]) => !state.Board.gameOver),
     map(pipe(
+      head,
       prop('key'),
       toLower,
       replace('arrow', ''),
@@ -86,9 +89,6 @@ const directionIs = key => ([ _, action ]) => action.direction === key
 
 // isNotOutOfBounds :: Maybe Tile -> Boolean
 const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
-
-// isFreeOfAnyCharacter :: Tile -> Boolean
-const isFreeOfAnyCharacter = o(isNil, prop('char'))
 
 // isNotGuarded :: Tile -> Boolean
 const isNotGuarded = pipe(
@@ -141,7 +141,7 @@ const obtainNextCoordinatesEpic = (action$, state$) =>
     )),
     withLatestFrom(state$),
     // find the tile matching the target coordinates (if any)
-    // Observable [Coordinates, State] -> Observable [Maybe Tile]
+    // Observable [Coordinates, State] -> Observable Tile
     map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board.lines)),
     withLatestFrom(action$),
     map(([ tile, action ]) => nextCoordinatesObtained(
@@ -155,7 +155,6 @@ const obtainNextCoordinatesEpic = (action$, state$) =>
 const requestMainCharacterMoveEpic = action$ =>
   action$.pipe(
     ofType(ARROW_KEY_PRESSED),
-    takeUntil(action$.ofType(GAME_OVER)),
     // @TODO inject characters id rather than using them directly
     map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
   )
@@ -207,18 +206,12 @@ const moveGuardianEpic = action$ =>
   )
 
 // gameOverEpic :: Epic -> Observable Action GAME_OVER
-const gameOverEpic = action$ =>
-  zip(
-    action$.pipe(
-      ofType(NEXT_COORDINATES_OBTAINED),
-      filter(isMainCharacterMove),
-    ),
-    action$.pipe(
-      ofType(NEXT_COORDINATES_OBTAINED),
-      filter(isReverseGuardianMove),
-    ),
-  ).pipe(
-    filter(complement(apply(haveNotTheSameDestination))),
+const gameOverEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    withLatestFrom(state$),
+    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board.lines)),
+    filter(isNil),
     map(gameOver),
   )
 

@@ -1,5 +1,6 @@
 import {
   createReducer,
+  findTileWithCharacter,
 } from '../../Util'
 import {
   find,

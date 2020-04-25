@@ -4,11 +4,9 @@ main {
     height: 600px;
     display: flex;
     flex-direction: column;
-    border: 1px red dotted;
 
     section[data-is="line"] {
       flex: 1;
-      border: 1px blue dotted;
       display: flex;
       flex-direction: row;
 
