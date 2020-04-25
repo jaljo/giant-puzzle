@@ -4,16 +4,19 @@ import { find, propEq } from 'ramda'
 export const MAIN_CHARACTER = {
   id: 'main-character',
   image: 'https://image.flaticon.com/icons/svg/2754/2754522.svg',
+  direction: 'up',
 }
 
 export const GUARDIAN_REGULAR = {
   id: 'guardian-regular',
   image: 'https://image.flaticon.com/icons/svg/562/562802.svg',
+  direction: 'up',
 }
 
 export const GUARDIAN_REVERSE = {
   id: 'guardian-reverse',
   image: 'https://image.flaticon.com/icons/svg/2699/2699064.svg',
+  direction: 'down',
 }
 
 const CHARACTER_MAP = [
@@ -265,12 +268,12 @@ export default createReducer(INITIAL_STATE, {
     meh: false,
   }),
 
-  [MOVE_CHARACTER]: (state, { characterId, coordinates }) => ({
+  [MOVE_CHARACTER]: (state, { characterId, direction, coordinates }) => ({
     ...state,
     lines: state.lines.map(
       line => line.map(tile => ({
         ...tile,
-        char: resolveCharacter(tile, coordinates, characterId),
+        char: resolveCharacter(tile, coordinates, characterId, direction),
       }))
     ),
   }),
@@ -296,10 +299,13 @@ export default createReducer(INITIAL_STATE, {
 // move character on the target slide, remove it from the initial slide
 // dont do anything for tiles with other characters on
 //
-// resolveCharacter :: (Tile, Coordinates, String) -> Maybe Character
-export const resolveCharacter = (tile, coordinates, characterId) =>
+// resolveCharacter :: (Tile, Coordinates, String, String) -> Maybe Character
+export const resolveCharacter = (tile, coordinates, characterId, direction) =>
   (tile.x === coordinates.x && tile.y === coordinates.y)
-    ? findCharacter(characterId)
+    ? {
+        ...findCharacter(characterId),
+        direction,
+      }
     : (tile.char && tile.char.id === characterId)
       ? null
       : tile.char

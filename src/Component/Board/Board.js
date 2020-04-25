@@ -35,7 +35,9 @@ const Tile = ({
 
 const Character = ({
   image,
+  direction,
 }) =>
   <div data-is="character">
+    {direction}
     <img src={image} alt="icon" />
   </div>
