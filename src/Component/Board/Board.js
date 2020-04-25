@@ -6,6 +6,7 @@ export default ({
   meh,
   retry,
   gameOver,
+  gameWon,
 }) =>
   <main>
     <div data-is="main-board">
@@ -21,6 +22,7 @@ export default ({
     {meh && 'Cant move there, asshat'}
 
     {gameOver && <p className="game-over">GAME OVER</p>}
+    {gameWon && <p className="game-won">GG ! Here's the fucking code : F.U.C.K</p>}
   </main>
 
 const Tile = ({

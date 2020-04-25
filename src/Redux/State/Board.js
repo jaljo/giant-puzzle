@@ -1,11 +1,5 @@
-import {
-  createReducer,
-  findTileWithCharacter,
-} from '../../Util'
-import {
-  find,
-  propEq,
-} from 'ramda'
+import { createReducer } from '../../Util'
+import { find, propEq } from 'ramda'
 
 export const MAIN_CHARACTER = {
   id: 'main-character',
@@ -30,9 +24,10 @@ const CHARACTER_MAP = [
 
 const findCharacter = id => find(propEq('id', id), CHARACTER_MAP)
 
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
   meh: false,
   gameOver: false,
+  winGame: false,
   lines: [
     // l6
     [
@@ -217,6 +212,7 @@ export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_O
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
 export const GAME_OVER = '@giant-puzzle/Board/GAME_OVER'
+export const WIN_GAME = '@giant-puzzle/Board/WIN_GAME'
 export const RETRY = '@giant-puzzle/Board/RETRY'
 
 // arrowKeyPressed :: direction
@@ -254,8 +250,13 @@ export const meh = characterId => ({
   characterId,
 })
 
+// gameOver :: () -> Action
 export const gameOver = () => ({ type: GAME_OVER })
 
+// winGame :: () -> Action
+export const winGame = () => ({ type: WIN_GAME })
+
+// retry :: () -> Action
 export const retry = () => ({ type: RETRY })
 
 export default createReducer(INITIAL_STATE, {
@@ -282,6 +283,11 @@ export default createReducer(INITIAL_STATE, {
   [GAME_OVER]: state => ({
     ...state,
     gameOver: true,
+  }),
+
+  [WIN_GAME]: state => ({
+    ...state,
+    winGame: true,
   }),
 
   [RETRY]: () => INITIAL_STATE,

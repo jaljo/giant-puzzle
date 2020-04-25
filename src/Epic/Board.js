@@ -1,7 +1,12 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
 import { map, filter, withLatestFrom, mergeMap } from 'rxjs/operators'
-import { findTileByCoordinates, findTileWithCharacter } from './../Util'
+import {
+  findTileByCoordinates,
+  findTileWithCharacter,
+  getWinTileA,
+  getWinTileB,
+} from './../Util'
 import {
   __,
   allPass,
@@ -9,11 +14,13 @@ import {
   complement,
   cond,
   dec,
+  filter as rfilter,
   evolve,
   head,
   ifElse,
   inc,
   includes,
+  isEmpty,
   isNil,
   map as rmap,
   o,
@@ -39,6 +46,7 @@ import {
   moveCharacter,
   nextCoordinatesObtained,
   requestCharacterMove,
+  winGame,
 } from './../Redux/State/Board'
 
 // isMainCharacterMove :: Action -> Boolean
@@ -58,6 +66,7 @@ const keyEventToMoveActionEpic = (action$, state$, { keyMap }) =>
     filter(isArrowKeyPressed(keyMap)),
     withLatestFrom(state$),
     filter(([ _, state ]) => !state.Board.gameOver),
+    filter(([ _, state ]) => !state.Board.winGame),
     map(pipe(
       head,
       prop('key'),
@@ -215,6 +224,31 @@ const gameOverEpic = (action$, state$) =>
     map(gameOver),
   )
 
+// charIsGuardian :: Tile -> Boolean
+const charIsGuardian = pipe(
+  path(['char', 'id']),
+  includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id]),
+)
+
+// everyTileIsGuarded :: [Tile] -> Boolean
+export const everyTileIsGuarded = pipe(
+  rfilter(complement(charIsGuardian)),
+  isEmpty,
+)
+
+// winGameEpic :: Epic -> Observable Action WIN_GAME
+const winGameEpic = (action$, state$) =>
+    action$.pipe(
+      ofType(MOVE_CHARACTER),
+      withLatestFrom(state$),
+      map(([ _, state ]) => [
+        getWinTileA(state.Board.lines),
+        getWinTileB(state.Board.lines),
+      ]),
+      filter(everyTileIsGuarded),
+      map(winGame),
+    )
+
 export default combineEpics(
   gameOverEpic,
   keyEventToMoveActionEpic,
@@ -224,4 +258,5 @@ export default combineEpics(
   requestMainCharacterMoveEpic,
   requestRegularGuardianMoveEpic,
   requestReverseGuardianMoveEpic,
+  winGameEpic,
 )

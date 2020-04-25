@@ -7,6 +7,7 @@ const mapStateToProps = state => ({
   lines: state.Board.lines,
   meh: state.Board.meh,
   gameOver: state.Board.gameOver,
+  gameWon: state.Board.winGame,
 })
 
 const mapDispatchToProps = dispatch => ({
