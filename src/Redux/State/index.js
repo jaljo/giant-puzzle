@@ -1,10 +1,10 @@
-import Dog from './Dog'
 import { tap, pipe } from 'ramda'
 import { combineReducers } from 'redux'
+import Board from './Board'
 
 // debug :: ((State, Action *) -> State) -> State -> Action * -> State
 export const debug = reducer => (state = reducer(), action = {}) => pipe(
-  tap(({ type }) => console.groupCollapsed(type || '')),
+  // tap(({ type }) => console.groupCollapsed(type || '')),
   tap(() => console.info(':: DEBUG ::')),
   tap(({ type }) => console.info(`Action :: ${type || 'NONE'}`)),
   tap(({ type, ...payload }) => console.info('Payload ::', payload)),
@@ -20,5 +20,5 @@ export const debug = reducer => (state = reducer(), action = {}) => pipe(
 
 // State :: (State, Action *) -> State
 export default combineReducers({
-  Dog,
+  Board,
 })
