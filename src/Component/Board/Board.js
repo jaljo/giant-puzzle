@@ -33,11 +33,11 @@ const Tile = ({
     {char && <Character {...char} />}
   </div>
 
+// Character :: Props -> React.Component
 const Character = ({
-  image,
   direction,
+  asset
 }) =>
-  <div data-is="character">
+  <div data-is="character" className={`${asset} ${direction}`}>
     {direction}
-    <img src={image} alt="icon" />
   </div>

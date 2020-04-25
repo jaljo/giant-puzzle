@@ -1,9 +1,10 @@
 main {
   div[data-is="main-board"] {
-    width: 500px;
-    height: 600px;
+    width: 640px;
+    height: 768px;
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
 
     section[data-is="line"] {
       flex: 1;
@@ -13,15 +14,47 @@ main {
       div[data-is="tile"] {
         flex: 1;
         border: 1px black dashed;
+        min-height: 128px;
+        min-width: 128px;
 
         &.is-locked {
           background-color: black;
         }
 
         div[data-is="character"] {
-          img {
-            width: 100px;
-            height: 100px;
+          width: 128px;
+          height: 128px;
+
+          &.chick.up {
+            background-image: url('/images/Chick_Up.png')
+          }
+
+          &.chick.down {
+            background-image: url('/images/Chick_Down.png')
+          }
+
+          &.chick.left {
+            background-image: url('/images/Chick_Left.png')
+          }
+
+          &.chick.right {
+            background-image: url('/images/Chick_Right.png')
+          }
+
+          &.fox.up {
+            background-image: url('/images/Fox_Up.png')
+          }
+
+          &.fox.down {
+            background-image: url('/images/Fox_Down.png')
+          }
+
+          &.fox.left {
+            background-image: url('/images/Fox_Left.png')
+          }
+
+          &.fox.right {
+            background-image: url('/images/Fox_Right.png')
           }
         }
       }

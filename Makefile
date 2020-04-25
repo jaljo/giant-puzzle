@@ -12,3 +12,7 @@ start:
 .PHONY:
 test:
 	docker-compose run --rm app npm run test
+
+.PHONY:
+build:
+	docker-compose run --rm app yarn build

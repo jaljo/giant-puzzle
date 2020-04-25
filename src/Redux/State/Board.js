@@ -4,18 +4,21 @@ import { find, propEq } from 'ramda'
 export const MAIN_CHARACTER = {
   id: 'main-character',
   image: 'https://image.flaticon.com/icons/svg/2754/2754522.svg',
+  asset: 'chick',
   direction: 'up',
 }
 
 export const GUARDIAN_REGULAR = {
   id: 'guardian-regular',
   image: 'https://image.flaticon.com/icons/svg/562/562802.svg',
+  asset: 'fox',
   direction: 'up',
 }
 
 export const GUARDIAN_REVERSE = {
   id: 'guardian-reverse',
   image: 'https://image.flaticon.com/icons/svg/2699/2699064.svg',
+  asset: 'fox',
   direction: 'down',
 }
 
@@ -267,6 +270,8 @@ export default createReducer(INITIAL_STATE, {
     ...state,
     meh: false,
   }),
+
+  [REQUEST_CHARACTER_MOVE]: (state, { characterId, direction }) => console.warn(characterId, direction) || state,
 
   [MOVE_CHARACTER]: (state, { characterId, direction, coordinates }) => ({
     ...state,
