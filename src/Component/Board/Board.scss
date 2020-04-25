@@ -1,32 +1,35 @@
-div[data-is="main-board"] {
-  width: 600px;
-  height: 600px;
-  display: flex;
-  flex-direction: column;
-  border: 1px red dotted;
-
-  section[data-is="line"] {
-    flex: 1;
-    border: 1px blue dotted;
+main {
+  div[data-is="main-board"] {
+    width: 500px;
+    height: 600px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 
-    div[data-is="tile"] {
+    section[data-is="line"] {
       flex: 1;
-      border: 1px black dashed;
+      display: flex;
+      flex-direction: row;
 
-      &.is-locked {
-        background-color: black;
+      div[data-is="tile"] {
+        flex: 1;
+        border: 1px black dashed;
+
+        &.is-locked {
+          background-color: black;
+        }
+
+        div[data-is="character"] {
+          img {
+            width: 100px;
+            height: 100px;
+          }
+        }
       }
     }
   }
-}
 
-div[data-is="character"] {
-  background-color: teal;
-
-  img {
-    width: 100px;
-    height: 100px;
+  p.game-over {
+    color: red;
+    font-size: 5rem;
   }
 }

@@ -1,30 +1,50 @@
-import { fromEvent } from 'rxjs'
+import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, ignoreElements, tap, filter, withLatestFrom } from 'rxjs/operators'
+import { map, filter, withLatestFrom, mergeMap } from 'rxjs/operators'
 import { findTileByCoordinates, findTileWithCharacter } from './../Util'
 import {
   __,
+  allPass,
+  apply,
+  complement,
   cond,
   dec,
-  dissoc,
   evolve,
+  head,
+  ifElse,
   inc,
   includes,
+  isNil,
+  map as rmap,
+  o,
+  omit,
+  or,
+  path,
   pipe,
   prop,
-  o,
-  complement,
-  isNil,
-  ifElse,
-  allPass,
+  replace,
+  toLower,
 } from 'ramda'
 import {
-  arrowKeyPressed,
+  ARROW_KEY_PRESSED,
+  GUARDIAN_REGULAR,
+  GUARDIAN_REVERSE,
   MAIN_CHARACTER,
+  MOVE_CHARACTER,
+  NEXT_COORDINATES_OBTAINED,
+  REQUEST_CHARACTER_MOVE,
+  arrowKeyPressed,
+  gameOver,
   meh,
   moveCharacter,
-  ARROW_KEY_PRESSED,
+  nextCoordinatesObtained,
+  requestCharacterMove,
 } from './../Redux/State/Board'
+
+// isMainCharacterMove :: Action -> Boolean
+const isMainCharacterMove = action => action.characterId === MAIN_CHARACTER.id
+const isRegularGuardianMove = action => action.characterId === GUARDIAN_REGULAR.id
+const isReverseGuardianMove = action => action.characterId === GUARDIAN_REVERSE.id
 
 // isArrowKeyPressed :: [String] -> KeyboardEvent -> Boolean
 const isArrowKeyPressed = keyMap => pipe(
@@ -36,7 +56,15 @@ const isArrowKeyPressed = keyMap => pipe(
 const keyEventToMoveActionEpic = (action$, state$, { keyMap }) =>
   fromEvent(window, 'keyup').pipe(
     filter(isArrowKeyPressed(keyMap)),
-    map(o(arrowKeyPressed, prop('key'))),
+    withLatestFrom(state$),
+    filter(([ _, state ]) => !state.Board.gameOver),
+    map(pipe(
+      head,
+      prop('key'),
+      toLower,
+      replace('arrow', ''),
+      arrowKeyPressed,
+    )),
   )
 
 // toLeft :: Tile -> Coordinates
@@ -45,54 +73,155 @@ const toRight = evolve({ x: inc })
 const toUp = evolve({ y: inc })
 const toDown = evolve({ y: dec })
 
-// tileToCoordinates :: Tile -> Coordinates
-const tileToCoordinates = dissoc('char')
+// getOppositeDirection :: String -> String
+const getOppositeDirection = direction => prop(direction, {
+  up: 'down',
+  down: 'up',
+  right: 'left',
+  left: 'right',
+})
+
+// tileToCoordinates :: Maybe Tile -> Maybe Coordinates
+const tileToCoordinates = omit(['char', 'locked'])
 
 // directionIs :: String -> [Any, Action] -> Boolean
 const directionIs = key => ([ _, action ]) => action.direction === key
 
 // isNotOutOfBounds :: Maybe Tile -> Boolean
-const isNotOutOfBounds = complement(isNil)
+const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
 
-// isFreeOfAnyCharacter :: Tile -> Boolean
-const isFreeOfAnyCharacter = o(isNil, prop('char'))
+// isNotGuarded :: Tile -> Boolean
+const isNotGuarded = pipe(
+  path(['char', 'id']),
+  complement(includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id])),
+)
 
 // isNotLocked :: Tile -> Boolean
 const isNotLocked = complement(prop('locked'))
 
-// moveMainCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
-// @TODO inject characters id rather than using them directly
-const moveMainCharacterEpic = (action$, state$) =>
+// tileIsFree :: Tile :: Boolean
+const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
+
+// haveNotTheSameDestination :: (Action.NEXT_COORDINATES_OBTAINED, Action.NEXT_COORDINATES_OBTAINED) -> Boolean
+const haveNotTheSameDestination = (a, b) => or(
+  a.targetTile.x !== b.targetTile.x,
+  a.targetTile.y !== b.targetTile.y,
+)
+
+// moveCharacterOrMeh :: Action.NEXT_COORDINATES_OBTAINED -> Action.MOVE_CHARACTER Action.MEH
+const moveCharacterOrMeh = ifElse(
+  o(tileIsFree, prop('targetTile')),
+  action => moveCharacter(
+    action.characterId,
+    action.direction,
+    tileToCoordinates(action.targetTile)
+  ),
+  o(meh, prop('characterId')),
+)
+
+// obtainNextCoordinatesEpic :: Epic -> Observable Action NEXT_COORDINATES_OBTAINED
+const obtainNextCoordinatesEpic = (action$, state$) =>
   action$.pipe(
-    ofType(ARROW_KEY_PRESSED),
+    ofType(REQUEST_CHARACTER_MOVE),
     withLatestFrom(state$),
     // find the tile where the main character is
     // Observable [Action, State] -> Observable Tile
-    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board.lines)),
+    map(([ action, state ]) => findTileWithCharacter(action.characterId)(state.Board.lines)),
     withLatestFrom(action$),
     // compute target coordinates
     // Observable [Tile, Action] -> Observable Coordinates
     map(pipe(
       cond([
-        [directionIs('ArrowUp'), ([ tile ]) => toUp(tile)],
-        [directionIs('ArrowDown'), ([ tile ]) => toDown(tile)],
-        [directionIs('ArrowLeft'), ([ tile ]) => toLeft(tile)],
-        [directionIs('ArrowRight'), ([ tile ]) => toRight(tile)],
+        [directionIs('up'), ([ tile ]) => toUp(tile)],
+        [directionIs('down'), ([ tile ]) => toDown(tile)],
+        [directionIs('left'), ([ tile ]) => toLeft(tile)],
+        [directionIs('right'), ([ tile ]) => toRight(tile)],
       ]),
       tileToCoordinates,
     )),
     withLatestFrom(state$),
     // find the tile matching the target coordinates (if any)
-    // Observable [Coordinates, State] -> Observable [Maybe Tile]
+    // Observable [Coordinates, State] -> Observable Tile
     map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board.lines)),
-    map(ifElse(
-      allPass([isNotOutOfBounds, isFreeOfAnyCharacter, isNotLocked]),
-      o(moveCharacter(MAIN_CHARACTER.id), tileToCoordinates),
-      meh,
+    withLatestFrom(action$),
+    map(([ tile, action ]) => nextCoordinatesObtained(
+      action.characterId,
+      action.direction,
+      tile,
     )),
   )
 
+// requestMainCharacterMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
+const requestMainCharacterMoveEpic = action$ =>
+  action$.pipe(
+    ofType(ARROW_KEY_PRESSED),
+    // @TODO inject characters id rather than using them directly
+    map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
+  )
+
+// moveMainCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
+const moveMainCharacterEpic = action$ =>
+  action$.pipe(
+    ofType(NEXT_COORDINATES_OBTAINED),
+    filter(isMainCharacterMove),
+    map(moveCharacterOrMeh),
+  )
+
+// requestRegularGuardianMoveEpic :: Epic -> REQUEST_CHARACTER_MOVE
+const requestRegularGuardianMoveEpic = action$ =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    filter(isMainCharacterMove),
+    // @TODO inject characters id rather than using them directly
+    map(action => requestCharacterMove(GUARDIAN_REGULAR.id, action.direction)),
+  )
+
+// requestReverseGuardianMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
+const requestReverseGuardianMoveEpic = action$ =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    filter(isMainCharacterMove),
+    map(pipe(
+      prop('direction'),
+      getOppositeDirection,
+      // @TODO inject characters id rather than using them directly
+      direction => requestCharacterMove(GUARDIAN_REVERSE.id, direction),
+    )),
+  )
+
+// moveGuardianEpic :: Epic -> [Observable Action *]
+const moveGuardianEpic = action$ =>
+  zip(
+    action$.pipe(
+      ofType(NEXT_COORDINATES_OBTAINED),
+      filter(isRegularGuardianMove),
+    ),
+    action$.pipe(
+      ofType(NEXT_COORDINATES_OBTAINED),
+      filter(isReverseGuardianMove),
+    ),
+  ).pipe(
+    filter(apply(haveNotTheSameDestination)),
+    mergeMap(rmap(moveCharacterOrMeh)),
+  )
+
+// gameOverEpic :: Epic -> Observable Action GAME_OVER
+const gameOverEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    withLatestFrom(state$),
+    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board.lines)),
+    filter(isNil),
+    map(gameOver),
+  )
+
 export default combineEpics(
+  gameOverEpic,
   keyEventToMoveActionEpic,
+  moveGuardianEpic,
   moveMainCharacterEpic,
+  obtainNextCoordinatesEpic,
+  requestMainCharacterMoveEpic,
+  requestRegularGuardianMoveEpic,
+  requestReverseGuardianMoveEpic,
 )
