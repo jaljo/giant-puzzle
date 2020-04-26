@@ -1,10 +1,10 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import Board from './Board'
+import Game from './Game'
 
 export default ({
   store,
 }) =>
   <Provider store={store}>
-    <Board />
+    <Game />
   </Provider>
