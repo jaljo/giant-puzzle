@@ -17,6 +17,10 @@ main {
         min-height: 128px;
         min-width: 128px;
 
+        &.goal {
+          background-color: teal;
+        }
+
         &.is-locked {
           background-color: black;
         }
