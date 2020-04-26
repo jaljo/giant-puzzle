@@ -6,6 +6,7 @@ import {
   findTileWithCharacter,
   getWinTileA,
   getWinTileB,
+  getOppositeDirection,
 } from './../Util'
 import {
   __,
@@ -81,14 +82,6 @@ const toLeft = evolve({ x: dec })
 const toRight = evolve({ x: inc })
 const toUp = evolve({ y: inc })
 const toDown = evolve({ y: dec })
-
-// getOppositeDirection :: String -> String
-const getOppositeDirection = direction => prop(direction, {
-  up: 'down',
-  down: 'up',
-  right: 'left',
-  left: 'right',
-})
 
 // tileToCoordinates :: Maybe Tile -> Maybe Coordinates
 const tileToCoordinates = omit(['char', 'locked'])

@@ -49,3 +49,11 @@ export const findTileByCoordinates = coord => pipe(
 
 export const getWinTileA = findTileByCoordinates({ x: 1, y: 4 })
 export const getWinTileB = findTileByCoordinates({ x: 3, y: 4 })
+
+// getOppositeDirection :: String -> String
+export const getOppositeDirection = direction => prop(direction, {
+  up: 'down',
+  down: 'up',
+  right: 'left',
+  left: 'right',
+})

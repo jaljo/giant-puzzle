@@ -1,5 +1,9 @@
-import { createReducer } from '../../Util'
-import { find, propEq } from 'ramda'
+import {
+  createReducer,
+  findTileWithCharacter,
+  getOppositeDirection,
+} from '../../Util'
+import { includes, __ } from 'ramda'
 
 export const MAIN_CHARACTER = {
   id: 'main-character',
@@ -21,14 +25,6 @@ export const GUARDIAN_REVERSE = {
   asset: 'fox',
   direction: 'down',
 }
-
-const CHARACTER_MAP = [
-  MAIN_CHARACTER,
-  GUARDIAN_REGULAR,
-  GUARDIAN_REVERSE,
-]
-
-const findCharacter = id => find(propEq('id', id), CHARACTER_MAP)
 
 export const INITIAL_STATE = {
   meh: false,
@@ -265,20 +261,35 @@ export const winGame = () => ({ type: WIN_GAME })
 // retry :: () -> Action
 export const retry = () => ({ type: RETRY })
 
+const isRegular = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
+
 export default createReducer(INITIAL_STATE, {
-  [ARROW_KEY_PRESSED]: state => ({
+  [ARROW_KEY_PRESSED]: (state, { direction }) => ({
     ...state,
     meh: false,
+    lines: state.lines.map(
+      line => line.map(tile => ({
+        ...tile,
+        char: tile.char === null
+          ? null
+          : {
+            ...tile.char,
+            direction: isRegular(tile.char.id)
+              ? direction
+              : getOppositeDirection(direction)
+            ,
+          }
+        ,
+      }))
+    ),
   }),
 
-  [REQUEST_CHARACTER_MOVE]: (state, { characterId, direction }) => console.warn(characterId, direction) || state,
-
-  [MOVE_CHARACTER]: (state, { characterId, direction, coordinates }) => ({
+  [MOVE_CHARACTER]: (state, { characterId, coordinates }) => ({
     ...state,
     lines: state.lines.map(
       line => line.map(tile => ({
         ...tile,
-        char: resolveCharacter(tile, coordinates, characterId, direction),
+        char: resolveCharacter(state.lines, tile, coordinates, characterId),
       }))
     ),
   }),
@@ -304,13 +315,10 @@ export default createReducer(INITIAL_STATE, {
 // move character on the target slide, remove it from the initial slide
 // dont do anything for tiles with other characters on
 //
-// resolveCharacter :: (Tile, Coordinates, String, String) -> Maybe Character
-export const resolveCharacter = (tile, coordinates, characterId, direction) =>
+// resolveCharacter :: ([[Tile]], Tile, Coordinates, String) -> Maybe Character
+export const resolveCharacter = (lines, tile, coordinates, characterId) =>
   (tile.x === coordinates.x && tile.y === coordinates.y)
-    ? {
-        ...findCharacter(characterId),
-        direction,
-      }
+    ? findTileWithCharacter(characterId)(lines).char
     : (tile.char && tile.char.id === characterId)
       ? null
       : tile.char
