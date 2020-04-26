@@ -29,36 +29,28 @@ main {
           width: 128px;
           height: 128px;
 
-          &.chick.up {
-            background-image: url('/images/Chick_Up.png')
+          &.chick {
+            background-image: url('/images/chicky.png');
           }
 
-          &.chick.down {
-            background-image: url('/images/Chick_Down.png')
+          &.fox {
+            background-image: url('/images/foxy.png');
           }
 
-          &.chick.left {
-            background-image: url('/images/Chick_Left.png')
+          &.up {
+            background-position-x: 0px;
           }
 
-          &.chick.right {
-            background-image: url('/images/Chick_Right.png')
+          &.down {
+            background-position-x: -384px;
           }
 
-          &.fox.up {
-            background-image: url('/images/Fox_Up.png')
+          &.left {
+            background-position-x: -256px;
           }
 
-          &.fox.down {
-            background-image: url('/images/Fox_Down.png')
-          }
-
-          &.fox.left {
-            background-image: url('/images/Fox_Left.png')
-          }
-
-          &.fox.right {
-            background-image: url('/images/Fox_Right.png')
+          &.right {
+            background-position-x: -128px;
           }
         }
       }
