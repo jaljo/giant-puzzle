@@ -1,0 +1,21 @@
+div[data-is="game"] {
+  display: flex;
+  flex-direction: row;
+
+  section.game-section {
+    flex: 1;
+    padding: 2rem;
+
+    &.right-panel {
+      p.game-over {
+        color: red;
+        font-size: 5rem;
+      }
+
+      p.game-won {
+        color: green;
+        font-size: 5rem;
+      }
+    }
+  }
+}
