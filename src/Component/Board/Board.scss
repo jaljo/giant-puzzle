@@ -1,9 +1,10 @@
 main {
   div[data-is="main-board"] {
-    width: 500px;
-    height: 600px;
+    width: 640px;
+    height: 768px;
     display: flex;
     flex-direction: column;
+    margin-bottom: 20px;
 
     section[data-is="line"] {
       flex: 1;
@@ -13,15 +14,43 @@ main {
       div[data-is="tile"] {
         flex: 1;
         border: 1px black dashed;
+        min-height: 128px;
+        min-width: 128px;
+
+        &.goal {
+          background-color: teal;
+        }
 
         &.is-locked {
           background-color: black;
         }
 
         div[data-is="character"] {
-          img {
-            width: 100px;
-            height: 100px;
+          width: 128px;
+          height: 128px;
+
+          &.chick {
+            background-image: url('/images/chicky.png');
+          }
+
+          &.fox {
+            background-image: url('/images/foxy.png');
+          }
+
+          &.up {
+            background-position-x: 0px;
+          }
+
+          &.down {
+            background-position-x: -384px;
+          }
+
+          &.left {
+            background-position-x: -256px;
+          }
+
+          &.right {
+            background-position-x: -128px;
           }
         }
       }
@@ -30,6 +59,11 @@ main {
 
   p.game-over {
     color: red;
+    font-size: 5rem;
+  }
+
+  p.game-won {
+    color: green;
     font-size: 5rem;
   }
 }

@@ -1,4 +1,6 @@
 import {
+  __,
+  defaultTo,
   filter,
   flatten,
   head,
@@ -9,7 +11,6 @@ import {
   prop,
   propOr,
   reject,
-  defaultTo,
 } from 'ramda'
 
 // createReducer :: (State, Object) -> (State, Action) -> State
@@ -45,3 +46,14 @@ export const findTileByCoordinates = coord => pipe(
   head,
   defaultTo({ x: null, y: null, char: null, locked: true })
 )
+
+export const getWinTileA = findTileByCoordinates({ x: 1, y: 4 })
+export const getWinTileB = findTileByCoordinates({ x: 3, y: 4 })
+
+// getOppositeDirection :: String -> String
+export const getOppositeDirection = direction => prop(direction, {
+  up: 'down',
+  down: 'up',
+  right: 'left',
+  left: 'right',
+})

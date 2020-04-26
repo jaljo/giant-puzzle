@@ -1,38 +1,35 @@
 import {
   createReducer,
   findTileWithCharacter,
+  getOppositeDirection,
 } from '../../Util'
-import {
-  find,
-  propEq,
-} from 'ramda'
+import { includes, __ } from 'ramda'
 
 export const MAIN_CHARACTER = {
   id: 'main-character',
   image: 'https://image.flaticon.com/icons/svg/2754/2754522.svg',
+  asset: 'chick',
+  direction: 'up',
 }
 
 export const GUARDIAN_REGULAR = {
   id: 'guardian-regular',
   image: 'https://image.flaticon.com/icons/svg/562/562802.svg',
+  asset: 'fox',
+  direction: 'up',
 }
 
 export const GUARDIAN_REVERSE = {
   id: 'guardian-reverse',
   image: 'https://image.flaticon.com/icons/svg/2699/2699064.svg',
+  asset: 'fox',
+  direction: 'down',
 }
 
-const CHARACTER_MAP = [
-  MAIN_CHARACTER,
-  GUARDIAN_REGULAR,
-  GUARDIAN_REVERSE,
-]
-
-const findCharacter = id => find(propEq('id', id), CHARACTER_MAP)
-
-const INITIAL_STATE = {
+export const INITIAL_STATE = {
   meh: false,
   gameOver: false,
+  winGame: false,
   lines: [
     // l6
     [
@@ -217,6 +214,7 @@ export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_O
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
 export const GAME_OVER = '@giant-puzzle/Board/GAME_OVER'
+export const WIN_GAME = '@giant-puzzle/Board/WIN_GAME'
 export const RETRY = '@giant-puzzle/Board/RETRY'
 
 // arrowKeyPressed :: direction
@@ -254,14 +252,36 @@ export const meh = characterId => ({
   characterId,
 })
 
+// gameOver :: () -> Action
 export const gameOver = () => ({ type: GAME_OVER })
 
+// winGame :: () -> Action
+export const winGame = () => ({ type: WIN_GAME })
+
+// retry :: () -> Action
 export const retry = () => ({ type: RETRY })
 
+const isRegular = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
+
 export default createReducer(INITIAL_STATE, {
-  [ARROW_KEY_PRESSED]: state => ({
+  [ARROW_KEY_PRESSED]: (state, { direction }) => ({
     ...state,
     meh: false,
+    lines: state.lines.map(
+      line => line.map(tile => ({
+        ...tile,
+        char: tile.char === null
+          ? null
+          : {
+            ...tile.char,
+            direction: isRegular(tile.char.id)
+              ? direction
+              : getOppositeDirection(direction)
+            ,
+          }
+        ,
+      }))
+    ),
   }),
 
   [MOVE_CHARACTER]: (state, { characterId, coordinates }) => ({
@@ -269,7 +289,7 @@ export default createReducer(INITIAL_STATE, {
     lines: state.lines.map(
       line => line.map(tile => ({
         ...tile,
-        char: resolveCharacter(tile, coordinates, characterId),
+        char: resolveCharacter(state.lines, tile, coordinates, characterId),
       }))
     ),
   }),
@@ -284,16 +304,21 @@ export default createReducer(INITIAL_STATE, {
     gameOver: true,
   }),
 
+  [WIN_GAME]: state => ({
+    ...state,
+    winGame: true,
+  }),
+
   [RETRY]: () => INITIAL_STATE,
 })
 
 // move character on the target slide, remove it from the initial slide
 // dont do anything for tiles with other characters on
 //
-// resolveCharacter :: (Tile, Coordinates, String) -> Maybe Character
-export const resolveCharacter = (tile, coordinates, characterId) =>
+// resolveCharacter :: ([[Tile]], Tile, Coordinates, String) -> Maybe Character
+export const resolveCharacter = (lines, tile, coordinates, characterId) =>
   (tile.x === coordinates.x && tile.y === coordinates.y)
-    ? findCharacter(characterId)
+    ? findTileWithCharacter(characterId)(lines).char
     : (tile.char && tile.char.id === characterId)
       ? null
       : tile.char
