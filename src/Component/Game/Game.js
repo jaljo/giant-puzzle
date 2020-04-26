@@ -1,6 +1,8 @@
 import React from 'react'
 import Board from './../Board'
+import './Game.scss'
 
+// Game :: Props -> React.Component
 export default ({
   meh,
   retry,
@@ -8,15 +10,15 @@ export default ({
   gameWon,
 }) =>
   <div data-is="game">
-    <section className="board">
+    <section className="game-section board">
       <Board />
     </section>
-    <section className="right-panel">
+    <section className="game-section right-panel">
       <button onClick={retry}>RETRY</button>
 
       {meh && 'Cant move there, asshat'}
 
       {gameOver && <p className="game-over">GAME OVER</p>}
-      {gameWon && <p className="game-won">GG ! Here's the fucking code : F.U.C.K</p>}
+      {gameWon && <p className="game-won">GG !</p>}
     </section>
   </div>
