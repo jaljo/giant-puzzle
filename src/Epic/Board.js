@@ -1,6 +1,6 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, filter, withLatestFrom, mergeMap } from 'rxjs/operators'
+import { map, filter, withLatestFrom, mergeMap, switchMap } from 'rxjs/operators'
 import {
   findTileByCoordinates,
   findTileWithCharacter,
@@ -231,8 +231,19 @@ export const everyTileIsGuarded = pipe(
 
 // winGameEpic :: Epic -> Observable Action WIN_GAME
 const winGameEpic = (action$, state$) =>
-    action$.pipe(
-      ofType(MOVE_CHARACTER),
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    filter(isMainCharacterMove),
+    switchMap(() => zip(
+      action$.pipe(
+        ofType(MOVE_CHARACTER),
+        filter(a => a.characterId === GUARDIAN_REVERSE.id),
+      ),
+      action$.pipe(
+        ofType(MOVE_CHARACTER),
+        filter(a => a.characterId === GUARDIAN_REGULAR.id),
+      )
+    ).pipe(
       withLatestFrom(state$),
       map(([ _, state ]) => [
         getWinTileA(state.Board.lines),
@@ -240,7 +251,8 @@ const winGameEpic = (action$, state$) =>
       ]),
       filter(everyTileIsGuarded),
       map(winGame),
-    )
+    ))
+  )
 
 export default combineEpics(
   gameOverEpic,

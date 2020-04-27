@@ -1,5 +1,5 @@
 {
-  "name": "knp-react-app",
+  "name": "chasse-aux-poussins",
   "version": "0.1.0",
   "dependencies": {
     "ramda": "^0.26.1",
@@ -21,8 +21,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^9.4.8",
-    "node-sass-chokidar": "^1.3.4",
-    "node-sass-tilde-importer": "^1.0.2",
+    "node-sass": "^4.13.1",
     "npm-run-all": "^4.1.5",
     "postcss-cli": "^6.1.1",
     "react-scripts": "^2.1.5",
