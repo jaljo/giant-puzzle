@@ -27,7 +27,6 @@ export const GUARDIAN_REVERSE = {
 }
 
 export const INITIAL_STATE = {
-  meh: false,
   gameOver: false,
   winGame: false,
   lines: [
@@ -247,10 +246,7 @@ export const moveCharacter = (characterId, direction, coordinates) => ({
 })
 
 // meh :: String -> Action
-export const meh = characterId => ({
-  type: MEH,
-  characterId,
-})
+export const meh = () => ({ type: MEH })
 
 // gameOver :: () -> Action
 export const gameOver = () => ({ type: GAME_OVER })
@@ -266,7 +262,6 @@ const isRegular = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
 export default createReducer(INITIAL_STATE, {
   [ARROW_KEY_PRESSED]: (state, { direction }) => ({
     ...state,
-    meh: false,
     lines: state.lines.map(
       line => line.map(tile => ({
         ...tile,
@@ -292,11 +287,6 @@ export default createReducer(INITIAL_STATE, {
         char: resolveCharacter(state.lines, tile, coordinates, characterId),
       }))
     ),
-  }),
-
-  [MEH]: state => ({
-    ...state,
-    meh: true,
   }),
 
   [GAME_OVER]: state => ({

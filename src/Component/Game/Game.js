@@ -4,7 +4,6 @@ import './Game.scss'
 
 // Game :: Props -> React.Component
 export default ({
-  meh,
   retry,
   gameOver,
   gameWon,
@@ -15,8 +14,6 @@ export default ({
     </section>
     <section className="game-section right-panel">
       <button onClick={retry}>RETRY</button>
-
-      {meh && 'Cant move there, asshat'}
 
       {gameOver && <p className="game-over">GAME OVER</p>}
       {gameWon && <p className="game-won">GG !</p>}
