@@ -6,6 +6,8 @@ export default ({
   direction,
   asset
 }) =>
-  <div data-is="character" className={`${asset} ${direction}`}>
-    {direction}
+  <div
+    data-is="character"
+    className={`${asset} ${direction}`}
+  >
   </div>

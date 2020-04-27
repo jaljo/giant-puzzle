@@ -13,7 +13,9 @@ export default ({
       <Board />
     </section>
     <section className="game-section right-panel">
-      <button onClick={retry}>RETRY</button>
+      <button className="retry" onClick={retry}>
+        Recommencer !
+      </button>
 
       {gameOver && <p className="game-over">GAME OVER</p>}
       {gameWon && <p className="game-won">GG !</p>}
