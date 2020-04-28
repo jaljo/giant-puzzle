@@ -4,6 +4,8 @@ div[data-is="main-board"] {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+  background-image: url('/images/layout.png');
+  padding: 0 128px 128px 128px;
 
   section[data-is="line"] {
     flex: 1;
@@ -12,17 +14,8 @@ div[data-is="main-board"] {
 
     div[data-is="tile"] {
       flex: 1;
-      border: 1px black dashed;
       min-height: 128px;
       min-width: 128px;
-
-      &.goal {
-        background-color: teal;
-      }
-
-      &.is-locked {
-        background-color: black;
-      }
     }
   }
 }
