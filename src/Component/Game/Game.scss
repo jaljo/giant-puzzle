@@ -3,6 +3,7 @@
 div[data-is="game"] {
   display: flex;
   flex-direction: row;
+  transform: scale(.8);
 
   section.game-section {
     flex: 1;
