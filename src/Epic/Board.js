@@ -118,7 +118,7 @@ const moveCharacterOrMeh = ifElse(
     action.direction,
     tileToCoordinates(action.targetTile)
   ),
-  o(meh, prop('characterId')),
+  meh,
 )
 
 // obtainNextCoordinatesEpic :: Epic -> Observable Action NEXT_COORDINATES_OBTAINED
