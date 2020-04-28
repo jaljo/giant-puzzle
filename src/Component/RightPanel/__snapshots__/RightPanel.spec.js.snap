@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component/RightPanel renders the game over message when the game is lost 1`] = `
+<div
+  data-is="right-panel"
+>
+  <p
+    className="emphasis"
+  >
+    GAME OVER !
+  </p>
+  <button
+    className="retry"
+  >
+    Recommencer !
+  </button>
+</div>
+`;
+
+exports[`Component/RightPanel renders the welcome message when the game is neither won or lost 1`] = `
+<div
+  data-is="right-panel"
+>
+  <h1>
+    La chasse aux poussins est ouverte !
+  </h1>
+  <p>
+    Bravo, tu es arrivé jusqu'ici ! Je suis l'
+    <b>
+      agent CC
+    </b>
+     et j'ai une mauvaise nouvelle pour toi, tu t'es transformé en poussin 
+    <img
+      alt="chick"
+      src="/images/chick_face.png"
+    />
+     !
+  </p>
+  <p>
+    Il va falloir survivre en faisant tomber les renards 
+    <img
+      alt="fox"
+      src="/images/fox_face.png"
+    />
+     dans leurs terriers 
+    <img
+      alt="burrow"
+      src="/images/burrow.png"
+    />
+     grâce aux flèches de ton clavier.
+  </p>
+  <p>
+    Mais prend garde à ne pas te faire manger !
+  </p>
+  <button
+    className="retry"
+  >
+    Recommencer !
+  </button>
+</div>
+`;
+
+exports[`Component/RightPanel renders the win message when the game is won 1`] = `
+<div
+  data-is="right-panel"
+>
+  <p
+    className="emphasis"
+  >
+    Félicitations !
+  </p>
+  <p>
+    Tu as réussi à sauver ta peau ! Tu es le futur 
+    <b>
+      <i>
+        Sherlock Holmes
+      </i>
+    </b>
+     de notre équipe !
+  </p>
+  <button
+    className="retry"
+  >
+    Recommencer !
+  </button>
+</div>
+`;

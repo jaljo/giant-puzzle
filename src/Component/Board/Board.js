@@ -14,21 +14,10 @@ export default ({
     )}
   </div>
 
-// isGoal :: (Number, Number) -> Boolean
-const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
-
 // Tile :: Props -> React.Component
 const Tile = ({
-  x,
-  y,
   char,
-  locked,
 }) =>
-  <div
-    data-is="tile"
-    className={`${locked ? 'is-locked' : ''} ${isGoal(x,y) ? 'goal' : '' }`}
-  >
+  <div data-is="tile">
     {char && <Character {...char} />}
   </div>
-
-

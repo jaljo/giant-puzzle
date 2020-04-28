@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component/Board renders a board with an empty tile and a tile with a character 1`] = `
+<div
+  data-is="main-board"
+>
+  <section
+    data-is="line"
+  >
+    <div
+      data-is="tile"
+    />
+    <div
+      data-is="tile"
+    >
+      <div
+        className="fox down"
+        data-is="character"
+      />
+    </div>
+  </section>
+</div>
+`;

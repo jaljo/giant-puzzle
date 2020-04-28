@@ -1,0 +1,52 @@
+@import './../../Style/variables';
+
+div[data-is="right-panel"] {
+  h1 {
+    margin-top: 0;
+  }
+
+  p {
+    font-size: 1.25rem;
+
+    &.emphasis {
+      margin: 0;
+      text-align: center;
+      color: $color-white;
+      font-size: 3rem;
+      font-weight: bold;
+      text-shadow: 0px 3px 0px $color-soil-light;
+    }
+
+    img {
+      max-height: 30px;
+    }
+  }
+
+  button.retry {
+    display: block;
+    margin: 3rem auto;
+    padding: 1rem;
+    min-width: 200px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: $color-white;
+    background-color: $color-grass-dark;
+    box-shadow: 0px 3px 0px $color-soil-dark;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: $color-grass-light;
+      box-shadow: 0px 3px 0px $color-soil-light;
+    }
+
+    &:active {
+      box-shadow: inset 0px 3px $color-soil-light;
+    }
+
+    &::-moz-focus-inner {
+      border: 0;
+    }
+  }
+}
