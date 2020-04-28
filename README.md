@@ -1,8 +1,11 @@
-# KNP React App
+# Chicky hunting !
 
-This is a bootstrapped React application. If you are looking
-for a Javascript FP starting point for your frontend application, this
-project could be a good start.
+A very simple game I made for the french escape game company [la ligue des gentlemen](https://laliguedesgentlemen.com/).
+
+Will you succeed in escaping from foxes ?
+
+![](https://i.ibb.co/BPCcWrJ/CHASSE-POUSSINS.png)
+
 
 ## Installation
 
@@ -13,9 +16,9 @@ Requires the latest version of :
 Just clone this repository and install its dependencies:
 
 ```bash
-$ git clone git@github.com:KnpLabs/knp-react-app.git myApp
-$ cd myApp
-$ make .env install-deps
+$ git clone https://github.com/jaljo/giant-puzzle escape-chicky
+$ cd escape-chicky
+$ make dev
 ```
 
 Then, run it with
@@ -23,48 +26,12 @@ Then, run it with
 $ make start
 ```
 
-and browse [http://localhost:3000/](http://localhost:3000/).
+Finally, browse [http://localhost:3010/](http://localhost:3010/).
 
-## What is inside ?
-
-This bootstrapper is based on top of
-[React Create App](https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md).
-Please follow this complete guide before posting any issue on this repository.
-In fact it does nothing except cleaning up some code and propose a default
-architecture.
-
-## Documentation
-
-### React
-- [Create React app](https://github.com/facebook/create-react-app)
-
-### Archi
-- [Duck file structure](https://medium.com/@scbarrus/the-ducks-file-structure-for-redux-d63c41b7035c)
-- [ADR](http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions)
-
-### Libs
-- [How to Redux](https://egghead.io/courses/getting-started-with-redux)
-- [React Functional Lifecycle](https://github.com/Aloompa/react-functional-lifecycle)
-- [RxJS](https://github.com/ReactiveX/rxjs)
-- [Learn RxJS](https://www.learnrxjs.io/)
-- [Redux Observable](https://redux-observable.js.org/)
-- [Intro to Ramda](http://randycoulman.com/blog/categories/thinking-in-ramda/)
-- [Ramda](https://ramdajs.com/docs/)
 
 ### Tests
-- [Jest](https://jestjs.io/)
-- [Test Renderer](https://reactjs.org/docs/test-renderer.html)
 
 To run the tests :
 ```bash
 $ make test
 ```
-
-### Useful resources
-
-- [Split JS bundle in chunks](https://serverless-stack.com/chapters/code-splitting-in-create-react-app.html)
-- Polyfills : specify which polyfills you need on
-[polyfill.io](https://polyfill.io/v3/url-builder)
-and add the given `script` tag in the `head` tag of the
-[`public/index.html`](/public/index.html) file to automatically import the
-polyfills required by the browser (determined by user agent).
