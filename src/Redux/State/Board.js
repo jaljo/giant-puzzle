@@ -26,184 +26,182 @@ export const GUARDIAN_REVERSE = {
   direction: 'down',
 }
 
-export const INITIAL_STATE = {
-  lines: [
-    // l6
-    [
+export const INITIAL_STATE = [
+  // l6
+  [
+    {
+      x: 0,
+      y: 5,
+      char: null,
+      locked: false,
+    }, {
+      x: 1,
+      y: 5 ,
+      char: GUARDIAN_REVERSE,
+      locked: false,
+    }, {
+      x: 2,
+      y: 5,
+      char: null,
+      locked: true,
+    }, {
+      x: 3,
+      y: 5 ,
+      char: null,
+      locked: false,
+    }, {
+      x: 4,
+      y: 5,
+      char: null,
+      locked: false,
+    }
+  ],
+  // l5
+  [
+    {
+      x: 0,
+      y: 4,
+      char: null,
+      locked: false,
+    }, {
+      x: 1,
+      y: 4 ,
+      char: null,
+      locked: false,
+    }, {
+      x: 2,
+      y: 4,
+      char: null,
+      locked: false,
+    }, {
+      x: 3,
+      y: 4 ,
+      char: null,
+      locked: false,
+    }, {
+      x: 4,
+      y: 4,
+      char: null,
+      locked: false,
+    }
+  ],
+  // l4
+  [
+    {
+      x: 0,
+      y: 3,
+      char: null,
+      locked: false,
+    }, {
+      x: 1,
+      y: 3 ,
+      char: null,
+      locked: false,
+    }, {
+      x: 2,
+      y: 3,
+      char: null,
+      locked: false,
+    }, {
+      x: 3,
+      y: 3 ,
+      char: null,
+      locked: false,
+    }, {
+      x: 4,
+      y: 3,
+      char: null,
+      locked: false,
+    }
+  ],
+  // l3
+  [
       {
         x: 0,
-        y: 5,
-        char: null,
-        locked: false,
-      }, {
-        x: 1,
-        y: 5 ,
-        char: GUARDIAN_REVERSE,
-        locked: false,
-      }, {
-        x: 2,
-        y: 5,
+        y: 2,
         char: null,
         locked: true,
       }, {
-        x: 3,
-        y: 5 ,
-        char: null,
-        locked: false,
-      }, {
-        x: 4,
-        y: 5,
-        char: null,
-        locked: false,
-      }
-    ],
-    // l5
-    [
-      {
-        x: 0,
-        y: 4,
-        char: null,
-        locked: false,
-      }, {
         x: 1,
-        y: 4 ,
+        y: 2 ,
         char: null,
         locked: false,
       }, {
         x: 2,
-        y: 4,
-        char: null,
+        y: 2,
+        char: MAIN_CHARACTER,
         locked: false,
       }, {
         x: 3,
-        y: 4 ,
+        y: 2 ,
         char: null,
         locked: false,
       }, {
         x: 4,
-        y: 4,
+        y: 2,
         char: null,
-        locked: false,
+        locked: true,
       }
-    ],
-    // l4
-    [
+  ],
+  // l2
+  [
       {
         x: 0,
-        y: 3,
+        y: 1,
         char: null,
-        locked: false,
+        locked: true,
       }, {
         x: 1,
-        y: 3 ,
+        y: 1,
         char: null,
         locked: false,
       }, {
         x: 2,
-        y: 3,
+        y: 1,
         char: null,
         locked: false,
       }, {
         x: 3,
-        y: 3 ,
+        y: 1 ,
         char: null,
         locked: false,
       }, {
         x: 4,
-        y: 3,
+        y: 1,
         char: null,
-        locked: false,
+        locked: true,
       }
-    ],
-    // l3
-    [
-        {
-          x: 0,
-          y: 2,
-          char: null,
-          locked: true,
-        }, {
-          x: 1,
-          y: 2 ,
-          char: null,
-          locked: false,
-        }, {
-          x: 2,
-          y: 2,
-          char: MAIN_CHARACTER,
-          locked: false,
-        }, {
-          x: 3,
-          y: 2 ,
-          char: null,
-          locked: false,
-        }, {
-          x: 4,
-          y: 2,
-          char: null,
-          locked: true,
-        }
-    ],
-    // l2
-    [
-        {
-          x: 0,
-          y: 1,
-          char: null,
-          locked: true,
-        }, {
-          x: 1,
-          y: 1,
-          char: null,
-          locked: false,
-        }, {
-          x: 2,
-          y: 1,
-          char: null,
-          locked: false,
-        }, {
-          x: 3,
-          y: 1 ,
-          char: null,
-          locked: false,
-        }, {
-          x: 4,
-          y: 1,
-          char: null,
-          locked: true,
-        }
-    ],
-    // l1
-    [
-        {
-          x: 0,
-          y: 0,
-          char: null,
-          locked: true,
-        }, {
-          x: 1,
-          y: 0,
-          char: null,
-          locked: true,
-        }, {
-          x: 2,
-          y: 0,
-          char: GUARDIAN_REGULAR,
-          locked: false,
-        }, {
-          x: 3,
-          y: 0,
-          char: null,
-          locked: true,
-        }, {
-          x: 4,
-          y: 0,
-          char: null,
-          locked: true,
-        }
-    ],
-  ]
-}
+  ],
+  // l1
+  [
+      {
+        x: 0,
+        y: 0,
+        char: null,
+        locked: true,
+      }, {
+        x: 1,
+        y: 0,
+        char: null,
+        locked: true,
+      }, {
+        x: 2,
+        y: 0,
+        char: GUARDIAN_REGULAR,
+        locked: false,
+      }, {
+        x: 3,
+        y: 0,
+        char: null,
+        locked: true,
+      }, {
+        x: 4,
+        y: 0,
+        char: null,
+        locked: true,
+      }
+  ],
+]
 
 export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
 export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOVE'
@@ -250,34 +248,28 @@ export const clear = () => ({ type: CLEAR })
 const isRegular = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
 
 export default createReducer(INITIAL_STATE, {
-  [ARROW_KEY_PRESSED]: (state, { direction }) => ({
-    ...state,
-    lines: state.lines.map(
-      line => line.map(tile => ({
-        ...tile,
-        char: tile.char === null
-          ? null
-          : {
-            ...tile.char,
-            direction: isRegular(tile.char.id)
-              ? direction
-              : getOppositeDirection(direction)
-            ,
-          }
-        ,
-      }))
-    ),
-  }),
+  [ARROW_KEY_PRESSED]: (state, { direction }) => state.map(
+    line => line.map(tile => ({
+      ...tile,
+      char: tile.char === null
+        ? null
+        : {
+          ...tile.char,
+          direction: isRegular(tile.char.id)
+            ? direction
+            : getOppositeDirection(direction)
+          ,
+        }
+      ,
+    }))
+  ),
 
-  [MOVE_CHARACTER]: (state, { characterId, coordinates }) => ({
-    ...state,
-    lines: state.lines.map(
-      line => line.map(tile => ({
-        ...tile,
-        char: resolveCharacter(state.lines, tile, coordinates, characterId),
-      }))
-    ),
-  }),
+  [MOVE_CHARACTER]: (state, { characterId, coordinates }) => state.map(
+    line => line.map(tile => ({
+      ...tile,
+      char: resolveCharacter(state, tile, coordinates, characterId),
+    }))
+  ),
 
   [CLEAR]: () => INITIAL_STATE,
 })

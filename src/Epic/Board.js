@@ -70,8 +70,8 @@ const keyEventToMoveActionEpic = (action$, state$, { keyMap }) =>
   fromEvent(window, 'keyup').pipe(
     filter(isArrowKeyPressed(keyMap)),
     withLatestFrom(state$),
-    filter(([ _, state ]) => !state.Board.gameOver),
-    filter(([ _, state ]) => !state.Board.winGame),
+    filter(([ _, state ]) => !state.Game.gameOver),
+    filter(([ _, state ]) => !state.Game.winGame),
     map(pipe(
       head,
       prop('key'),
@@ -132,7 +132,7 @@ const obtainNextCoordinatesEpic = (action$, state$) =>
     withLatestFrom(state$),
     // find the tile where the main character is
     // Observable [Action, State] -> Observable Tile
-    map(([ action, state ]) => findTileWithCharacter(action.characterId)(state.Board.lines)),
+    map(([ action, state ]) => findTileWithCharacter(action.characterId)(state.Board)),
     withLatestFrom(action$),
     // compute target coordinates
     // Observable [Tile, Action] -> Observable Coordinates
@@ -148,7 +148,7 @@ const obtainNextCoordinatesEpic = (action$, state$) =>
     withLatestFrom(state$),
     // find the tile matching the target coordinates (if any)
     // Observable [Coordinates, State] -> Observable Tile
-    map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board.lines)),
+    map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board)),
     withLatestFrom(action$),
     map(([ tile, action ]) => nextCoordinatesObtained(
       action.characterId,
@@ -216,7 +216,7 @@ const gameOverEpic = (action$, state$) =>
   action$.pipe(
     ofType(MOVE_CHARACTER),
     withLatestFrom(state$),
-    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board.lines)),
+    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board)),
     filter(isNil),
     map(gameOver),
   )
@@ -250,8 +250,8 @@ const winGameEpic = (action$, state$) =>
     ).pipe(
       withLatestFrom(state$),
       map(([ _, state ]) => [
-        getWinTileA(state.Board.lines),
-        getWinTileB(state.Board.lines),
+        getWinTileA(state.Board),
+        getWinTileB(state.Board),
       ]),
       filter(everyTileIsGuarded),
       map(winGame),
