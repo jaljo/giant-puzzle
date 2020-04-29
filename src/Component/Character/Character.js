@@ -3,11 +3,12 @@ import './Character.scss'
 
 // Character :: Props -> React.Component
 export default ({
+  asset,
   direction,
-  asset
+  isBurrowed,
 }) =>
   <div
     data-is="character"
-    className={`${asset} ${direction}`}
+    className={`${asset} ${direction} ${isBurrowed ? 'is-burrowed' : ''}`}
   >
   </div>
