@@ -27,7 +27,7 @@ export default ({
           <img src="/images/fox_face.png" alt="fox" /> doivent être dans leurs
           terriers <img src="/images/goal.png" alt="goal" /> en même temps !
         </p>
-        <p>Prends bien garde à ne pas te faire manger où tu devra reccomencer !</p>
+        <p>Prends bien garde à ne pas te faire manger ou tu devras recommencer !</p>
       </>
     }
 
