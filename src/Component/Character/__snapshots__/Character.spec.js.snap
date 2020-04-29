@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component/Character renders a character component 1`] = `
+<div
+  className="fox up"
+  data-is="character"
+/>
+`;
