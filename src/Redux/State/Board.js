@@ -40,7 +40,7 @@ export const INITIAL_STATE = {
       }, {
         x: 1,
         y: 5 ,
-        char: null,
+        char: GUARDIAN_REVERSE,
         locked: false,
       }, {
         x: 2,
@@ -74,7 +74,7 @@ export const INITIAL_STATE = {
       }, {
         x: 2,
         y: 4,
-        char: GUARDIAN_REVERSE,
+        char: null,
         locked: false,
       }, {
         x: 3,
