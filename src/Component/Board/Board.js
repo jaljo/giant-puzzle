@@ -1,6 +1,7 @@
 import React from 'react'
 import './Board.scss'
 import Character from './../Character'
+import { isGoal } from './../../Util'
 
 // Board :: Props -> React.Component
 export default ({
@@ -17,7 +18,9 @@ export default ({
 // Tile :: Props -> React.Component
 const Tile = ({
   char,
+  x,
+  y,
 }) =>
   <div data-is="tile">
-    {char && <Character {...char} />}
+    {char && <Character {...char} isBurrowed={isGoal(x, y)} />}
   </div>

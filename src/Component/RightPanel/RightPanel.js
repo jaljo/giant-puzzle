@@ -17,12 +17,17 @@ export default ({
           <img src="/images/chick_face.png" alt="chick"/> !
         </p>
         <p>
-          Il va falloir survivre en faisant tomber les renards&nbsp;
+          Fais tomber les renards&nbsp;
           <img src="/images/fox_face.png" alt="fox" /> dans leurs terriers&nbsp;
           <img src="/images/burrow.png" alt="burrow" /> grâce aux flèches de
           ton clavier.
         </p>
-        <p>Mais prend garde à ne pas te faire manger !</p>
+        <p>
+          Pour réussir, les deux renards&nbsp;
+          <img src="/images/fox_face.png" alt="fox" /> doivent être dans leurs
+          terriers <img src="/images/goal.png" alt="goal" /> en même temps !
+        </p>
+        <p>Prends bien garde à ne pas te faire manger ou tu devras recommencer !</p>
       </>
     }
 

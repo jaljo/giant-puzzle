@@ -56,3 +56,6 @@ export const getOppositeDirection = direction => prop(direction, {
   right: 'left',
   left: 'right',
 })
+
+// isGoal :: (Number, Number) -> Boolean
+export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)

@@ -14,7 +14,7 @@ exports[`Component/Board renders a board with an empty tile and a tile with a ch
       data-is="tile"
     >
       <div
-        className="fox down"
+        className="fox down "
         data-is="character"
       />
     </div>

@@ -37,7 +37,7 @@ exports[`Component/RightPanel renders the welcome message when the game is neith
      !
   </p>
   <p>
-    Il va falloir survivre en faisant tomber les renards 
+    Fais tomber les renards 
     <img
       alt="fox"
       src="/images/fox_face.png"
@@ -50,7 +50,20 @@ exports[`Component/RightPanel renders the welcome message when the game is neith
      grâce aux flèches de ton clavier.
   </p>
   <p>
-    Mais prend garde à ne pas te faire manger !
+    Pour réussir, les deux renards 
+    <img
+      alt="fox"
+      src="/images/fox_face.png"
+    />
+     doivent être dans leurs terriers 
+    <img
+      alt="goal"
+      src="/images/goal.png"
+    />
+     en même temps !
+  </p>
+  <p>
+    Prends bien garde à ne pas te faire manger où tu devra reccomencer !
   </p>
   <button
     className="retry"

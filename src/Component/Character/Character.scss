@@ -12,17 +12,37 @@ div[data-is="character"] {
 
   &.up {
     background-position-x: 0px;
+
+    &.is-burrowed {
+      background-position-x: -512px;
+    }
   }
 
   &.down {
     background-position-x: -384px;
+
+    &.is-burrowed {
+      background-position-x: -896px;
+    }
   }
 
   &.left {
     background-position-x: -256px;
+
+    &.is-burrowed {
+      background-position-x: -768px;
+    }
   }
 
   &.right {
     background-position-x: -128px;
+
+    &.is-burrowed {
+      background-position-x: -640px;
+    }
+  }
+
+  &.burrow {
+    background-position-x: -512px;
   }
 }
