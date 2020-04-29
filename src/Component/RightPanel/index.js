@@ -1,12 +1,12 @@
 import RightPanel from './RightPanel'
 import { connect } from 'react-redux'
 import { compose } from 'ramda'
-import { retry } from './../../Redux/State/Board'
+import { retry } from './../../Redux/State/Game'
 
 // mapStateToProps :: State -> Props
 const mapStateToProps = state => ({
-  gameOver: state.Board.gameOver,
-  gameWon: state.Board.winGame,
+  gameOver: state.Game.gameOver,
+  gameWon: state.Game.winGame,
 })
 
 // mapDispatchToProps :: (Action * -> State) -> Props

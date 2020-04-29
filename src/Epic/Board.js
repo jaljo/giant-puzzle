@@ -42,13 +42,17 @@ import {
   NEXT_COORDINATES_OBTAINED,
   REQUEST_CHARACTER_MOVE,
   arrowKeyPressed,
-  gameOver,
+  clear,
   meh,
   moveCharacter,
   nextCoordinatesObtained,
   requestCharacterMove,
-  winGame,
 } from './../Redux/State/Board'
+import {
+  gameOver,
+  winGame,
+  RETRY,
+} from './../Redux/State/Game'
 
 // isMainCharacterMove :: Action -> Boolean
 const isMainCharacterMove = action => action.characterId === MAIN_CHARACTER.id
@@ -254,6 +258,13 @@ const winGameEpic = (action$, state$) =>
     ))
   )
 
+// resetBoardEpic :: Epic -> Observable Action CLEAN
+export const resetBoardEpic = action$ =>
+  action$.pipe(
+    ofType(RETRY),
+    map(clear),
+  )
+
 export default combineEpics(
   gameOverEpic,
   keyEventToMoveActionEpic,
@@ -263,5 +274,6 @@ export default combineEpics(
   requestMainCharacterMoveEpic,
   requestRegularGuardianMoveEpic,
   requestReverseGuardianMoveEpic,
+  resetBoardEpic,
   winGameEpic,
 )

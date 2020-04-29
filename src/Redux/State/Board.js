@@ -27,8 +27,6 @@ export const GUARDIAN_REVERSE = {
 }
 
 export const INITIAL_STATE = {
-  gameOver: false,
-  winGame: false,
   lines: [
     // l6
     [
@@ -212,9 +210,7 @@ export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOV
 export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_OBTAINED'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
-export const GAME_OVER = '@giant-puzzle/Board/GAME_OVER'
-export const WIN_GAME = '@giant-puzzle/Board/WIN_GAME'
-export const RETRY = '@giant-puzzle/Board/RETRY'
+export const CLEAR = '@giant-puzzle/Board/CLEAR'
 
 // arrowKeyPressed :: direction
 export const arrowKeyPressed = direction => ({
@@ -248,14 +244,8 @@ export const moveCharacter = (characterId, direction, coordinates) => ({
 // meh :: String -> Action
 export const meh = () => ({ type: MEH })
 
-// gameOver :: () -> Action
-export const gameOver = () => ({ type: GAME_OVER })
-
-// winGame :: () -> Action
-export const winGame = () => ({ type: WIN_GAME })
-
 // retry :: () -> Action
-export const retry = () => ({ type: RETRY })
+export const clear = () => ({ type: CLEAR })
 
 const isRegular = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
 
@@ -289,17 +279,7 @@ export default createReducer(INITIAL_STATE, {
     ),
   }),
 
-  [GAME_OVER]: state => ({
-    ...state,
-    gameOver: true,
-  }),
-
-  [WIN_GAME]: state => ({
-    ...state,
-    winGame: true,
-  }),
-
-  [RETRY]: () => INITIAL_STATE,
+  [CLEAR]: () => INITIAL_STATE,
 })
 
 // move character on the target slide, remove it from the initial slide
