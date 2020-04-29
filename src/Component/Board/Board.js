@@ -22,5 +22,5 @@ const Tile = ({
   y,
 }) =>
   <div data-is="tile">
-    {char && <Character {...char} isBurrowed={isGoal(x, y)}/>}
+    {char && <Character {...char} isBurrowed={isGoal(x, y)} />}
   </div>
