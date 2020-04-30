@@ -7,6 +7,9 @@ import {
 import {
   getCharInitialPos,
   isRegularCharacter,
+  MAIN_CHARACTER,
+  GUARDIAN_REGULAR,
+  GUARDIAN_REVERSE,
 } from './Characters'
 import {
   map,
@@ -53,7 +56,7 @@ export const INITIAL_STATE = buildBoardInitialState(BOARD_COLS)(BOARD_ROWS)
 
 export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
 export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOVE'
-export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_OBTAINED'
+export const DESTINATION_TILE_FOUND = '@giant-puzzle/Board/DESTINATION_TILE_FOUND'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const MEH = '@giant-puzzle/Board/MEH'
 export const CLEAR = '@giant-puzzle/Board/CLEAR'
@@ -64,16 +67,25 @@ export const arrowKeyPressed = direction => ({
   direction,
 })
 
-// requestCharacterMove :: (String, String) -> Action
-export const requestCharacterMove = (characterId, direction) => ({
+// requestCharacterMove :: String -> String -> Action
+const requestCharacterMove = characterId => direction => ({
   type: REQUEST_CHARACTER_MOVE,
   characterId,
   direction,
 })
 
-// nextCoordinatesObtained :: (String, String, Tile) -> Action
-export const nextCoordinatesObtained = (characterId, direction, targetTile) => ({
-  type: NEXT_COORDINATES_OBTAINED,
+// requestMainCharMove :: String -> Action
+export const requestMainCharMove = requestCharacterMove(MAIN_CHARACTER.id)
+
+// requestRegularGuardMove :: String -> Action
+export const requestRegularGuardMove = requestCharacterMove(GUARDIAN_REGULAR.id)
+
+// requestReverseGuardMove :: String -> Action
+export const requestReverseGuardMove = requestCharacterMove(GUARDIAN_REVERSE.id)
+
+// destinationTileFound :: (String, String, Tile) -> Action
+export const destinationTileFound = (characterId, direction, targetTile) => ({
+  type: DESTINATION_TILE_FOUND,
   characterId,
   direction,
   targetTile,
