@@ -65,7 +65,7 @@ import {
 const tileToCoordinates = omit(['char', 'locked'])
 
 // directionIs :: String -> [Any, Action] -> Boolean
-const directionIs = key => ([ _, action ]) => action.direction === key
+const directionIs = direction => ([ _, action ]) => action.direction === direction
 
 // isNotOutOfBounds :: Maybe Tile -> Boolean
 const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
@@ -127,12 +127,11 @@ export const obtainNextCoordinatesEpic = (action$, state$) =>
         [directionIs('left'), ([ tile ]) => toLeft(tile)],
         [directionIs('right'), ([ tile ]) => toRight(tile)],
       ]),
-      tileToCoordinates,
     )),
     withLatestFrom(state$),
     // find the tile matching the target coordinates (if any)
     // Observable [Coordinates, State] -> Observable Tile
-    map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board)),
+    map(([ [ x, y ], state ]) => findTileByCoordinates(x, y)(state.Board)),
     withLatestFrom(action$),
     map(([ tile, action ]) => destinationTileFound(
       action.characterId,

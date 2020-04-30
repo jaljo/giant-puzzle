@@ -44,15 +44,15 @@ export const findTileWithCharacter = characterId => pipe(
   head,
 )
 
-// findTileInLine :: Coordinates -> [Tile] -> [Tile]
-const findTileInLine = coord => pipe(
-  filter(hasCoordinates(coord.x, coord.y)),
+// findTileInRow :: (Number, Number) -> [Tile] -> [Tile]
+const findTileInRow = (x, y) => pipe(
+  filter(hasCoordinates(x, y)),
   reject(isEmpty),
 )
 
-// findTileByCoordinates :: Coordinates -> [[Tile]] -> Tile
-export const findTileByCoordinates = coord => pipe(
-  map(findTileInLine(coord)),
+// findTileByCoordinates :: (Number, Number) -> [[Tile]] -> Tile
+export const findTileByCoordinates = (x, y) => pipe(
+  map(findTileInRow(x, y)),
   reject(isEmpty),
   flatten,
   head,
@@ -60,10 +60,10 @@ export const findTileByCoordinates = coord => pipe(
 )
 
 // getWinTileA :: [[Tile]] -> Tile
-export const getWinTileA = findTileByCoordinates({ x: 1, y: 4 })
+export const getWinTileA = findTileByCoordinates(1, 4)
 
 // geWinTileB :: [[Tile]] -> Tile
-export const getWinTileB = findTileByCoordinates({ x: 3, y: 4 })
+export const getWinTileB = findTileByCoordinates(3, 4)
 
 // getOppositeDirection :: String -> String
 export const getOppositeDirection = direction => prop(direction, {
@@ -109,14 +109,14 @@ export const keyboardEventToDirection = pipe(
  * Tile utilities
  */
 
-// toLeft :: Tile -> Tile
-export const toLeft = evolve({ x: dec })
+// toLeft :: Tile -> [Number, Number]
+export const toLeft = tile => [ tile.x-1, tile.y ]
 
-// toRight :: Tile -> Tile
-export const toRight = evolve({ x: inc })
+// toRight :: Tile -> [Number, Number]
+export const toRight = tile => [ tile.x+1, tile. y ]
 
-// toUp :: Tile -> Tile
-export const toUp = evolve({ y: inc })
+// toUp :: Tile -> [Number, Number]
+export const toUp = tile => [ tile.x, tile.y+1 ]
 
-// toDown :: Tile -> Tile
-export const toDown = evolve({ y: dec })
+// toDown :: Tile -> [Number, Number]
+export const toDown = tile => [ tile.x, tile.y-1 ]
