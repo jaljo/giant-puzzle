@@ -35,9 +35,6 @@ import {
 } from 'ramda'
 import {
   ARROW_KEY_PRESSED,
-  GUARDIAN_REGULAR,
-  GUARDIAN_REVERSE,
-  MAIN_CHARACTER,
   MOVE_CHARACTER,
   NEXT_COORDINATES_OBTAINED,
   REQUEST_CHARACTER_MOVE,
@@ -48,6 +45,11 @@ import {
   nextCoordinatesObtained,
   requestCharacterMove,
 } from './../Redux/State/Board'
+import {
+  GUARDIAN_REGULAR,
+  GUARDIAN_REVERSE,
+  MAIN_CHARACTER,
+} from './../Redux/State/Characters'
 import {
   gameOver,
   winGame,

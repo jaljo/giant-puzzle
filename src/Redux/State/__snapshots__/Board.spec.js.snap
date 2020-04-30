@@ -1,0 +1,210 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Redux :: State :: Board reduces to initial state by default 1`] = `
+Array [
+  Array [
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 0,
+      "y": 5,
+    },
+    Object {
+      "char": Object {
+        "asset": "fox",
+        "direction": "down",
+        "id": "guardian-reverse",
+      },
+      "locked": false,
+      "x": 1,
+      "y": 5,
+    },
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 2,
+      "y": 5,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 3,
+      "y": 5,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 4,
+      "y": 5,
+    },
+  ],
+  Array [
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 0,
+      "y": 4,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 1,
+      "y": 4,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 2,
+      "y": 4,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 3,
+      "y": 4,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 4,
+      "y": 4,
+    },
+  ],
+  Array [
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 0,
+      "y": 3,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 1,
+      "y": 3,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 2,
+      "y": 3,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 3,
+      "y": 3,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 4,
+      "y": 3,
+    },
+  ],
+  Array [
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 0,
+      "y": 2,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 1,
+      "y": 2,
+    },
+    Object {
+      "char": Object {
+        "asset": "chick",
+        "direction": "up",
+        "id": "main-character",
+      },
+      "locked": false,
+      "x": 2,
+      "y": 2,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 3,
+      "y": 2,
+    },
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 4,
+      "y": 2,
+    },
+  ],
+  Array [
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 0,
+      "y": 1,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 1,
+      "y": 1,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 2,
+      "y": 1,
+    },
+    Object {
+      "char": null,
+      "locked": false,
+      "x": 3,
+      "y": 1,
+    },
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 4,
+      "y": 1,
+    },
+  ],
+  Array [
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 0,
+      "y": 0,
+    },
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 1,
+      "y": 0,
+    },
+    Object {
+      "char": Object {
+        "asset": "fox",
+        "direction": "up",
+        "id": "guardian-regular",
+      },
+      "locked": false,
+      "x": 2,
+      "y": 0,
+    },
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 3,
+      "y": 0,
+    },
+    Object {
+      "char": null,
+      "locked": true,
+      "x": 4,
+      "y": 0,
+    },
+  ],
+]
+`;
