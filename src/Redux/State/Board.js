@@ -68,9 +68,9 @@ export const arrowKeyPressed = direction => ({
 })
 
 // requestCharacterMove :: String -> String -> Action
-const requestCharacterMove = characterId => direction => ({
+const requestCharacterMove = id => direction => ({
   type: REQUEST_CHARACTER_MOVE,
-  characterId,
+  id,
   direction,
 })
 
@@ -84,19 +84,20 @@ export const requestRegularGuardMove = requestCharacterMove(GUARDIAN_REGULAR.id)
 export const requestReverseGuardMove = requestCharacterMove(GUARDIAN_REVERSE.id)
 
 // destinationTileFound :: (String, String, Tile) -> Action
-export const destinationTileFound = (characterId, direction, targetTile) => ({
+export const destinationTileFound = (id, direction, tile) => ({
   type: DESTINATION_TILE_FOUND,
-  characterId,
+  id,
   direction,
-  targetTile,
+  tile,
 })
 
-// moveCharacter :: (String, String -> Coordinates) -> Action
-export const moveCharacter = (characterId, direction, coordinates) => ({
+// moveCharacter :: (String, String, Number, Number) -> Action
+export const moveCharacter = (id, direction, x, y) => ({
   type: MOVE_CHARACTER,
-  characterId,
+  id,
   direction,
-  coordinates,
+  x,
+  y,
 })
 
 // meh :: String -> Action
@@ -122,10 +123,10 @@ export default createReducer(INITIAL_STATE, {
     }))
   ),
 
-  [MOVE_CHARACTER]: (state, { characterId, coordinates }) => state.map(
+  [MOVE_CHARACTER]: (state, { id, x, y }) => state.map(
     line => line.map(tile => ({
       ...tile,
-      char: resolveCharacter(state, tile, coordinates, characterId),
+      char: resolveCharacter(state, tile, id, x, y),
     }))
   ),
 
@@ -135,10 +136,10 @@ export default createReducer(INITIAL_STATE, {
 // move character on the target slide, remove it from the initial slide
 // dont do anything for tiles with other characters on
 //
-// resolveCharacter :: ([[Tile]], Tile, Coordinates, String) -> Maybe Character
-export const resolveCharacter = (lines, tile, coordinates, characterId) =>
-  (tile.x === coordinates.x && tile.y === coordinates.y)
-    ? findTileWithCharacter(characterId)(lines).char
-    : (tile.char && tile.char.id === characterId)
+// resolveCharacter :: ([[Tile]], Tile, String, Number, Number) -> Maybe Character
+export const resolveCharacter = (rows, tile, id, x, y) =>
+  (tile.x === x && tile.y === y)
+    ? findTileWithCharacter(id)(rows).char
+    : (tile.char && tile.char.id === id)
       ? null
       : tile.char

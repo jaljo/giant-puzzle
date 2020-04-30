@@ -1,6 +1,7 @@
 import {
-  includes,
   __,
+  either,
+  includes,
 } from 'ramda'
 import {
   getCharByCoordinates,
@@ -53,13 +54,16 @@ export const getCharInitialPos = getCharByCoordinates(CHARS_INITIAL_POS)
 export const isRegularCharacter = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
 
 // isGuardCharacter :: String -> Boolean
-export const isGuardCharacter = includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id])
+// export const isGuardCharacter = includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id])
 
-// mainCharMove :: Object -> Boolean
-export const mainCharMove = obj => obj.characterId === MAIN_CHARACTER.id
+// isMainChar :: Object -> Boolean
+export const isMainChar = obj => obj.id === MAIN_CHARACTER.id
 
-// mainCharMove :: Object -> Boolean
-export const regularGuardMove = obj => obj.characterId === GUARDIAN_REGULAR.id
+// isMainChar :: Object -> Boolean
+export const isRegularGuard = obj => obj.id === GUARDIAN_REGULAR.id
 
-// reverseGuardMove :: Object -> Boolean
-export const reverseGuardMove = obj => obj.characterId === GUARDIAN_REVERSE.id
+// isReverseGuard :: Object -> Boolean
+export const isReverseGuard = obj => obj.id === GUARDIAN_REVERSE.id
+
+// isGuardian :: Object -> Boolean
+export const isGuardian = either(isRegularGuard, isReverseGuard)

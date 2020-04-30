@@ -1,6 +1,5 @@
 import {
   __,
-  evolve,
   complement,
   defaultTo,
   filter,
@@ -17,8 +16,6 @@ import {
   reject,
   replace,
   toLower,
-  dec,
-  inc,
 } from 'ramda'
 
 // console.warn(isGuardCharacter('fuck'))
@@ -30,15 +27,18 @@ export const createReducer = (initialState, handlers) =>
 // hasCoordinates :: (Number, Number) -> Object -> Boolean
 export const hasCoordinates = (x, y) => obj => obj.x === x && obj.y === y
 
-// findCharacterInLine :: String -> [Tile] -> [Tile]
-const findCharacterInLine = characterId => pipe(
-  filter(tile => tile.char !== null && tile.char.id === characterId),
+// hasDistinctCoordinates :: (Object, Object) -> Boolean
+export const hasDistinctCoordinates = (a, b) => (a.x !== b.x) || (a.y !== b.y)
+
+// findCharacterInRow :: String -> [Tile] -> [Tile]
+const findCharacterInRow = id => pipe(
+  filter(tile => tile.char !== null && tile.char.id === id),
   reject(isEmpty),
 )
 
 // findTileWithCharacter :: String -> [[Tile]] -> Tile
-export const findTileWithCharacter = characterId => pipe(
-  map(findCharacterInLine(characterId)),
+export const findTileWithCharacter = id => pipe(
+  map(findCharacterInRow(id)),
   reject(isEmpty),
   flatten,
   head,
@@ -76,18 +76,6 @@ export const getOppositeDirection = direction => prop(direction, {
 // isGoal :: (Number, Number) -> Boolean
 export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
 
-// coordsExistsInTileSet :: [Tile] -> (Number, Number) -> Boolean
-export const coordsExistsInTileSet = set => (x, y) => pipe(
-  filter(hasCoordinates(x, y)),
-  complement(isEmpty),
-)(set)
-
-// getCharByCoordinates :: [Tile] -> (Number, Number) -> Maybe Character
-export const getCharByCoordinates = set => (x, y) => pipe(
-  find(hasCoordinates(x, y)),
-  propOr(null, 'char'),
-)(set)
-
 /**
  * KeyboardEvents utilities
  */
@@ -109,14 +97,32 @@ export const keyboardEventToDirection = pipe(
  * Tile utilities
  */
 
+ // isNotOutOfBounds :: Tile -> Boolean
+export const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
+
+// isNotLocked :: Tile -> Boolean
+export const isNotLocked = complement(prop('locked'))
+
 // toLeft :: Tile -> [Number, Number]
 export const toLeft = tile => [ tile.x-1, tile.y ]
 
 // toRight :: Tile -> [Number, Number]
-export const toRight = tile => [ tile.x+1, tile. y ]
+export const toRight = tile => [ tile.x+1, tile.y ]
 
 // toUp :: Tile -> [Number, Number]
 export const toUp = tile => [ tile.x, tile.y+1 ]
 
 // toDown :: Tile -> [Number, Number]
 export const toDown = tile => [ tile.x, tile.y-1 ]
+
+// coordsExistsInTileSet :: [Tile] -> (Number, Number) -> Boolean
+export const coordsExistsInTileSet = set => (x, y) => pipe(
+  filter(hasCoordinates(x, y)),
+  complement(isEmpty),
+)(set)
+
+// getCharByCoordinates :: [Tile] -> (Number, Number) -> Maybe Character
+export const getCharByCoordinates = set => (x, y) => pipe(
+  find(hasCoordinates(x, y)),
+  propOr(null, 'char'),
+)(set)
