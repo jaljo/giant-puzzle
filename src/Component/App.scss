@@ -7,4 +7,33 @@ html {
   line-height: 1.5;
   font-size: 1.25rem;
   overflow: hidden;
+  height: 100%;
+
+  body {
+    margin: 0;
+    height: 100%;
+
+    #root {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      p[data-is="signature"] {
+        margin-top: auto;
+        margin-bottom: 1rem;
+        text-align: center;
+        font-size: 0.75rem;
+
+        a {
+          color: white;
+          font-weight: bold;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
 }
