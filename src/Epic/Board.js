@@ -1,65 +1,60 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, filter, withLatestFrom, mergeMap, switchMap } from 'rxjs/operators'
+import { map, filter, withLatestFrom, mergeMap, switchMap, ignoreElements, tap } from 'rxjs/operators'
 import {
   findTileByCoordinates,
   findTileWithCharacter,
+  getNextDirection,
   getOppositeDirection,
   getWinTileA,
   getWinTileB,
-  isArrowKeyPressed,
-  keyboardEventToDirection,
-  toDown,
-  toLeft,
-  toRight,
-  toUp,
   hasDistinctCoordinates,
-  isNotOutOfBounds,
+  isArrowKeyPressed,
   isNotLocked,
+  isNotOutOfBounds,
+  keyboardEventToDirection,
 } from './../Util'
 import {
   allPass,
   complement,
-  cond,
   filter as rfilter,
   ifElse,
   isEmpty,
   isNil,
   map as rmap,
   o,
+  pick,
   pipe,
   prop,
   propOr,
+  values,
 } from 'ramda'
 import {
   ARROW_KEY_PRESSED,
-  MOVE_CHARACTER,
   DESTINATION_TILE_FOUND,
+  MOVE_CHARACTER,
   REQUEST_CHARACTER_MOVE,
   arrowKeyPressed,
   clear,
+  destinationTileFound,
   meh,
   moveCharacter,
-  destinationTileFound,
   requestMainCharMove,
   requestRegularGuardMove,
   requestReverseGuardMove,
 } from './../Redux/State/Board'
 import {
   MAIN_CHARACTER,
-  isMainChar,
-  isReverseGuard,
-  isRegularGuard,
   isGuardian,
+  isMainChar,
+  isRegularGuard,
+  isReverseGuard,
 } from './../Redux/State/Characters'
 import {
+  RETRY,
   gameOver,
   winGame,
-  RETRY,
 } from './../Redux/State/Game'
-
-// directionIs :: String -> [Any, Action] -> Boolean
-const directionIs = direction => ([ _, action ]) => action.direction === direction
 
 // isNotGuarded :: Tile -> Boolean
 const isNotGuarded = pipe(
@@ -98,33 +93,23 @@ export const obtainNextCoordinatesEpic = (action$, state$) =>
   action$.pipe(
     ofType(REQUEST_CHARACTER_MOVE),
     withLatestFrom(state$),
-    // find the tile where the character is
-    // Observable [Action, State] -> Observable Tile
-    map(([ action, state ]) => findTileWithCharacter(action.id)(state.Board)),
-// *** ADAPTER
-// map(tile => [tile.x, tile.y]),
-// *** ADAPTER
+    // find the tile current cooordinates of the character
+    // Observable [Action, State] -> Observable [Number, Number]
+    map(pipe(
+      ([ action, state ]) => findTileWithCharacter(action.id)(state.Board),
+      pick(['x', 'y']),
+      values,
+    )),
     withLatestFrom(action$),
     // compute target coordinates
-    // Observable [Tile, Action] -> Observable Coordinates
-    map(pipe(
-      cond([
-        [directionIs('up'), ([ tile ]) => toUp(tile)],
-        [directionIs('down'), ([ tile ]) => toDown(tile)],
-        [directionIs('left'), ([ tile ]) => toLeft(tile)],
-        [directionIs('right'), ([ tile ]) => toRight(tile)],
-      ]),
-    )),
+    // Observable [ [Number, Number], Action ] -> Observable [Number, Number]
+    map(([ [ x, y ], action ]) => getNextDirection(x, y, action.direction)),
     withLatestFrom(state$),
     // find the tile matching the target coordinates (if any)
-    // Observable [Coordinates, State] -> Observable Tile
+    // Observable [ [Number, Number], State] -> Observable Tile
     map(([ [ x, y ], state ]) => findTileByCoordinates(x, y)(state.Board)),
     withLatestFrom(action$),
-    map(([ tile, action ]) => destinationTileFound(
-      action.id,
-      action.direction,
-      tile,
-    )),
+    map(([ tile, a ]) => destinationTileFound(a.id, a.direction, tile)),
   )
 
 // requestMainCharacterMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
@@ -162,8 +147,8 @@ export const requestReverseGuardianMoveEpic = action$ =>
     )),
   )
 
-// moveGuardianEpic :: Epic -> [Observable Action *]
-export const moveGuardianEpic = action$ =>
+// moveGuardiansEpic :: Epic -> [Observable Action *]
+export const moveGuardiansEpic = action$ =>
   zip(
     action$.pipe(
       ofType(DESTINATION_TILE_FOUND),
@@ -223,7 +208,7 @@ export const resetBoardEpic = action$ =>
 export default combineEpics(
   gameOverEpic,
   keyEventToMoveActionEpic,
-  moveGuardianEpic,
+  moveGuardiansEpic,
   moveMainCharacterEpic,
   obtainNextCoordinatesEpic,
   requestMainCharacterMoveEpic,

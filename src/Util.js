@@ -18,11 +18,21 @@ import {
   toLower,
 } from 'ramda'
 
-// console.warn(isGuardCharacter('fuck'))
+/**
+ * Redux utilities
+ */
+
 // createReducer :: (State, Object) -> (State, Action) -> State
 export const createReducer = (initialState, handlers) =>
   (state = initialState, action = {}) =>
     propOr(identity, prop('type', action), handlers)(state, action)
+
+/**
+ * Coordinates utilities
+ */
+
+// isGoal :: (Number, Number) -> Boolean
+export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
 
 // hasCoordinates :: (Number, Number) -> Object -> Boolean
 export const hasCoordinates = (x, y) => obj => obj.x === x && obj.y === y
@@ -30,6 +40,20 @@ export const hasCoordinates = (x, y) => obj => obj.x === x && obj.y === y
 // hasDistinctCoordinates :: (Object, Object) -> Boolean
 export const hasDistinctCoordinates = (a, b) => (a.x !== b.x) || (a.y !== b.y)
 
+const transformMap = {
+  'up':    (x, y) => [ x, y+1 ],
+  'left':  (x, y) => [ x-1, y ],
+  'down':  (x, y) => [ x, y-1 ],
+  'right': (x, y) => [ x+1, y ],
+}
+
+// getNextDirection :: (Number, Number, String) -> (Number, Number)
+export const getNextDirection = (x, y, direction) => pipe(
+  prop(direction),
+  transformer => transformer(x, y),
+)(transformMap)
+
+// console.warn(getNextDirection(0,0)('up'))
 // findCharacterInRow :: String -> [Tile] -> [Tile]
 const findCharacterInRow = id => pipe(
   filter(tile => tile.char !== null && tile.char.id === id),
@@ -73,9 +97,6 @@ export const getOppositeDirection = direction => prop(direction, {
   left: 'right',
 })
 
-// isGoal :: (Number, Number) -> Boolean
-export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
-
 /**
  * KeyboardEvents utilities
  */
@@ -102,18 +123,6 @@ export const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
 
 // isNotLocked :: Tile -> Boolean
 export const isNotLocked = complement(prop('locked'))
-
-// toLeft :: Tile -> [Number, Number]
-export const toLeft = tile => [ tile.x-1, tile.y ]
-
-// toRight :: Tile -> [Number, Number]
-export const toRight = tile => [ tile.x+1, tile.y ]
-
-// toUp :: Tile -> [Number, Number]
-export const toUp = tile => [ tile.x, tile.y+1 ]
-
-// toDown :: Tile -> [Number, Number]
-export const toDown = tile => [ tile.x, tile.y-1 ]
 
 // coordsExistsInTileSet :: [Tile] -> (Number, Number) -> Boolean
 export const coordsExistsInTileSet = set => (x, y) => pipe(
