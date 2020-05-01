@@ -83,12 +83,6 @@ export const keyboardEventToDirection = pipe(
  * Tile utilities
  */
 
- // isNotOutOfBounds :: Tile -> Boolean
-export const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
-
-// isNotLocked :: Tile -> Boolean
-export const isNotLocked = complement(prop('locked'))
-
 // coordsExistsInTileSet :: [Tile] -> (Number, Number) -> Boolean
 export const coordsExistsInTileSet = set => (x, y) => pipe(
   filter(hasCoordinates(x, y)),

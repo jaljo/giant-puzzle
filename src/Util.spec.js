@@ -1,18 +1,6 @@
 import * as Util from './Util'
 
 describe('Util/Tile', () => {
-  it('determines if a tile is not out of bounds', () => {
-    expect(Util.isNotOutOfBounds({ x: 1, y: 1})).toBeTruthy()
-    expect(Util.isNotOutOfBounds({ x: null, y: 1})).toBeFalsy()
-    expect(Util.isNotOutOfBounds({ x: 1, y: null})).toBeFalsy()
-    expect(Util.isNotOutOfBounds({ x: null, y: null})).toBeFalsy()
-  })
-
-  it('determines if a tile is locked', () => {
-    expect(Util.isNotLocked({ locked: false })).toBeTruthy()
-    expect(Util.isNotLocked({ locked: true })).toBeFalsy()
-  })
-
   it('determines if coordinates exists in a tile set', () => {
     const set = [
       {x: 0, y: 1},

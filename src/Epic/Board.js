@@ -16,8 +16,6 @@ import {
   getWinTileB,
   hasDistinctCoordinates,
   isArrowKeyPressed,
-  isNotLocked,
-  isNotOutOfBounds,
   keyboardEventToDirection,
 } from './../Util'
 import {
@@ -60,6 +58,12 @@ import {
   winGame,
 } from './../Redux/State/Game'
 
+// isNotOutOfBounds :: Tile -> Boolean
+const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
+
+// isNotLocked :: Tile -> Boolean
+const isNotLocked = complement(prop('locked'))
+
 // isNotGuarded :: Tile -> Boolean
 const isNotGuarded = pipe(
   propOr({}, 'char'),
@@ -73,7 +77,7 @@ export const everyTileIsGuarded = pipe(
 )
 
 // tileIsFree :: Tile :: Boolean
-const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
+export const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
 
 // keyEventtileonEpic :: Epic -> Observable Action ARROW_KEY_PRESSED
 const keyEventToMoveActionEpic = (_, state$) =>

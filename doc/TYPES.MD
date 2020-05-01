@@ -10,9 +10,3 @@
   char :: Character
   locked :: Boolean
 }
-
-@type Coordinates :: {
-  x :: Number
-  y :: Number
-}
-
