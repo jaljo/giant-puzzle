@@ -38,8 +38,8 @@ export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
 // hasCoordinates :: (Number, Number) -> Object -> Boolean
 export const hasCoordinates = (x, y) => obj => obj.x === x && obj.y === y
 
-// hasDistinctCoordinates :: (Object, Object) -> Boolean
-export const hasDistinctCoordinates = (a, b) => (a.x !== b.x) || (a.y !== b.y)
+// haveDistinctCoordinates :: (Object, Object) -> Boolean
+export const haveDistinctCoordinates = (a, b) => (a.x !== b.x) || (a.y !== b.y)
 
 const transformMap = {
   'up':    (x, y) => [ x, y+1 ],

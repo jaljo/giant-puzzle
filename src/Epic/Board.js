@@ -14,7 +14,7 @@ import {
   getOppositeDirection,
   getWinTileA,
   getWinTileB,
-  hasDistinctCoordinates,
+  haveDistinctCoordinates,
   isArrowKeyPressed,
   keyboardEventToDirection,
 } from './../Util'
@@ -161,7 +161,7 @@ export const moveGuardiansEpic = action$ =>
       filter(isReverseGuard),
     ),
   ).pipe(
-    filter(([ a1, a2 ]) => hasDistinctCoordinates(a1.tile, a2.tile)),
+    filter(([ a1, a2 ]) => haveDistinctCoordinates(a1.tile, a2.tile)),
     mergeMap(pipe(
       rfilter(o(tileIsFree, prop('tile'))),
       rmap(moveCharacter),
