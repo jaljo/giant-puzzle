@@ -53,9 +53,6 @@ export const getCharInitialPos = getCharByCoordinates(CHARS_INITIAL_POS)
 // isRegularCharacter :: String -> Boolean
 export const isRegularCharacter = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
 
-// isGuardCharacter :: String -> Boolean
-// export const isGuardCharacter = includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id])
-
 // isMainChar :: Object -> Boolean
 export const isMainChar = obj => obj.id === MAIN_CHARACTER.id
 

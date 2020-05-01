@@ -89,8 +89,8 @@ const keyEventToMoveActionEpic = (_, state$) =>
     map(o(arrowKeyPressed, keyboardEventToDirection)),
   )
 
-// obtainNextCoordinatesEpic :: Epic -> Observable Action DESTINATION_TILE_FOUND
-export const obtainNextCoordinatesEpic = (action$, state$) =>
+// findDestinationTileEpic :: Epic -> Observable Action DESTINATION_TILE_FOUND
+export const findDestinationTileEpic = (action$, state$) =>
   action$.pipe(
     ofType(REQUEST_CHARACTER_MOVE),
     withLatestFrom(state$),
@@ -215,7 +215,7 @@ export default combineEpics(
   keyEventToMoveActionEpic,
   moveGuardiansEpic,
   moveMainCharacterEpic,
-  obtainNextCoordinatesEpic,
+  findDestinationTileEpic,
   requestMainCharacterMoveEpic,
   requestRegularGuardianMoveEpic,
   requestReverseGuardianMoveEpic,
