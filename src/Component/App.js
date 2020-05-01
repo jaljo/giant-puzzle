@@ -9,4 +9,9 @@ export default ({
 }) =>
   <Provider store={store}>
     <Game />
+    <p data-is="signature">
+      Developed with love by <a href="https://github.com/jaljo/giant-puzzle">jaljo</a>.
+      &nbsp;
+      Design by <a href="https://comigo.itch.io/farm-puzzle-animals">CoMiGo</a>.
+    </p>
   </Provider>
