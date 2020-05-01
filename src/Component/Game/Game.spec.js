@@ -2,7 +2,7 @@ import Game from './Game'
 import React from 'react'
 import { createTestStore, createContainer } from './../../TestUtil'
 
-describe('Component/Game', () => {
+describe('Component :: Game', () => {
   let store
 
   beforeEach(() => {

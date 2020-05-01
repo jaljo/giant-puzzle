@@ -1,6 +1,6 @@
 import * as Util from './Util'
 
-describe('Util/Coordinates', () => {
+describe('Util :: Coordinates', () => {
   it('determines goal coordinates', () => {
     expect(Util.isGoal(1, 4)).toBeTruthy()
     expect(Util.isGoal(3, 4)).toBeTruthy()
@@ -39,7 +39,7 @@ describe('Util/Coordinates', () => {
   })
 })
 
-describe('Util/KeyboardEvents', () => {
+describe('Util :: KeyboardEvents', () => {
   it('determines if the pressed key is an arrow', () => {
     expect(Util.isArrowKeyPressed({ key: 'ArrowUp'})).toBeTruthy()
     expect(Util.isArrowKeyPressed({ key: 'ArrowDown'})).toBeTruthy()
@@ -56,7 +56,7 @@ describe('Util/KeyboardEvents', () => {
   })
 })
 
-describe('Util/Tile', () => {
+describe('Util :: Tile', () => {
   it('move a character from a tile to another', () => {
     const mockChar = { id: 'hi' }
     const anotherChar = { id: 'ho' }

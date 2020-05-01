@@ -2,7 +2,7 @@ import React from 'react'
 import renderer from 'react-test-renderer'
 import Board from './Board'
 
-describe('Component/Board', () => {
+describe('Component :: Board', () => {
   it('renders a board with an empty tile and a tile with a character', () => {
     const mockChar = {
       asset: 'fox',
