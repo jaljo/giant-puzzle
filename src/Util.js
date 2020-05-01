@@ -1,5 +1,6 @@
 import {
   __,
+  always,
   complement,
   defaultTo,
   filter,
@@ -7,6 +8,7 @@ import {
   flatten,
   head,
   identity,
+  ifElse,
   includes,
   isEmpty,
   map,
@@ -82,6 +84,21 @@ export const keyboardEventToDirection = pipe(
 /**
  * Tile utilities
  */
+
+// removeCharIdentifiedBy :: String -> Tile -> Maybe Character
+const removeCharIdentifiedBy = id => ifElse(
+  pathEq(['char', 'id'], id),
+  always(null),
+  prop('char'),
+)
+
+// @see Util.spec.js for concrete usage examples
+// moveCharToTile :: ([[Tile]], String, Number, Number) -> Tile -> Maybe Character
+export const moveCharToTile = (rows, id, x, y) => ifElse(
+  hasCoordinates(x, y),
+  () => findTileWithCharacter(id)(rows).char,
+  removeCharIdentifiedBy(id)
+)
 
 // coordsExistsInTileSet :: [Tile] -> (Number, Number) -> Boolean
 export const coordsExistsInTileSet = set => (x, y) => pipe(

@@ -1,8 +1,8 @@
 import {
-  createReducer,
-  findTileWithCharacter,
-  getOppositeDirection,
   coordsExistsInTileSet,
+  createReducer,
+  getOppositeDirection,
+  moveCharToTile,
 } from './../../Util'
 import {
   getCharInitialPos,
@@ -54,13 +54,14 @@ const buildBoardInitialState = columns => pipe(
 // @see Board.spec.js.snap for a concrete representation of the state
 export const INITIAL_STATE = buildBoardInitialState(BOARD_COLS)(BOARD_ROWS)
 
+// action types
 export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
 export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOVE'
 export const DESTINATION_TILE_FOUND = '@giant-puzzle/Board/DESTINATION_TILE_FOUND'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
 export const CLEAR = '@giant-puzzle/Board/CLEAR'
 
-// arrowKeyPressed :: direction
+// arrowKeyPressed :: String -> Action
 export const arrowKeyPressed = direction => ({
   type: ARROW_KEY_PRESSED,
   direction,
@@ -90,7 +91,7 @@ export const destinationTileFound = (id, direction, tile) => ({
   tile,
 })
 
-// moveCharacter :: (String, String, Tile) -> Action
+// moveCharacter :: Action.DESTINATION_TILE_FOUND -> Action
 export const moveCharacter = ({ id, direction, tile }) => ({
   type: MOVE_CHARACTER,
   id,
@@ -122,20 +123,9 @@ export default createReducer(INITIAL_STATE, {
   [MOVE_CHARACTER]: (state, { id, x, y }) => state.map(
     line => line.map(tile => ({
       ...tile,
-      char: resolveCharacter(state, tile, id, x, y),
+      char: moveCharToTile(state, id, x, y)(tile),
     }))
   ),
 
   [CLEAR]: () => INITIAL_STATE,
 })
-
-// move character on the target slide, remove it from the initial slide
-// dont do anything for tiles with other characters on
-//
-// resolveCharacter :: ([[Tile]], Tile, String, Number, Number) -> Maybe Character
-export const resolveCharacter = (rows, tile, id, x, y) =>
-  (tile.x === x && tile.y === y)
-    ? findTileWithCharacter(id)(rows).char
-    : (tile.char && tile.char.id === id)
-      ? null
-      : tile.char

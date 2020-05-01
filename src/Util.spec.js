@@ -31,7 +31,7 @@ describe('Util/Coordinates', () => {
     expect(Util.getNextDirection(1, 1, 'right')).toEqual([2, 1])
   })
 
-  it('determines the oposite of a given direction', () => {
+  it('determines the opposite of a given direction', () => {
     expect(Util.getOppositeDirection('down')).toBe('up')
     expect(Util.getOppositeDirection('up')).toBe('down')
     expect(Util.getOppositeDirection('left')).toBe('right')
@@ -57,6 +57,36 @@ describe('Util/KeyboardEvents', () => {
 })
 
 describe('Util/Tile', () => {
+  it('move a character from a tile to another', () => {
+    const mockChar = { id: 'hi' }
+    const anotherChar = { id: 'ho' }
+    const set = [
+      [ {x: 0, y: 1, char: null}, {x: 1, y: 1, char: mockChar} ],
+      [ {x: 0, y: 0, char: null}, {x: 1, y: 0, char: null} ],
+    ]
+
+    // case 1 :: character destination coordinates and destination tile
+    // coordinates matches
+    // -> get the character object from the tile set
+    expect(
+      Util.moveCharToTile(set, 'hi', 0, 1)({x: 0, y: 1})
+    ).toBe(mockChar)
+
+    // case 2 :: coordinates mismatch BUT the character identified by the id is
+    // on the destination tile
+    // -> remove that caracter
+    expect(
+      Util.moveCharToTile(set, 'hi', 0, 1)({x: 1, y: 1, char: mockChar})
+    ).toBeNull()
+
+    // case 3 :: coordinates mismatch AND there is another character already
+    // present on the destination tile
+    // -> keep that character
+    expect(
+      Util.moveCharToTile(set, 'hi', 0, 1)({ x: 1, y: 1, char: anotherChar })
+    ).toEqual(anotherChar)
+  })
+
   it('determines if coordinates exists in a tile set', () => {
     const set = [
       {x: 0, y: 1},
