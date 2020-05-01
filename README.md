@@ -4,7 +4,7 @@ A very simple game I made for the french escape game company [la ligue des gentl
 
 Will you succeed in escaping from foxes ?
 
-![](https://i.ibb.co/BPCcWrJ/CHASSE-POUSSINS.png)
+![](https://i.ibb.co/QYKkdXH/CHICKIES.png)
 
 
 ## Installation
