@@ -53,42 +53,6 @@ export const getNextDirection = (x, y, direction) => pipe(
   transformer => transformer(x, y),
 )(transformMap)
 
-// console.warn(getNextDirection(0,0)('up'))
-// findCharacterInRow :: String -> [Tile] -> [Tile]
-const findCharacterInRow = id => pipe(
-  filter(tile => tile.char !== null && tile.char.id === id),
-  reject(isEmpty),
-)
-
-// findTileWithCharacter :: String -> [[Tile]] -> Tile
-export const findTileWithCharacter = id => pipe(
-  map(findCharacterInRow(id)),
-  reject(isEmpty),
-  flatten,
-  head,
-)
-
-// findTileInRow :: (Number, Number) -> [Tile] -> [Tile]
-const findTileInRow = (x, y) => pipe(
-  filter(hasCoordinates(x, y)),
-  reject(isEmpty),
-)
-
-// findTileByCoordinates :: (Number, Number) -> [[Tile]] -> Tile
-export const findTileByCoordinates = (x, y) => pipe(
-  map(findTileInRow(x, y)),
-  reject(isEmpty),
-  flatten,
-  head,
-  defaultTo({ x: null, y: null, char: null, locked: true })
-)
-
-// getWinTileA :: [[Tile]] -> Tile
-export const getWinTileA = findTileByCoordinates(1, 4)
-
-// geWinTileB :: [[Tile]] -> Tile
-export const getWinTileB = findTileByCoordinates(3, 4)
-
 // getOppositeDirection :: String -> String
 export const getOppositeDirection = direction => prop(direction, {
   up: 'down',
@@ -135,3 +99,38 @@ export const getCharByCoordinates = set => (x, y) => pipe(
   find(hasCoordinates(x, y)),
   propOr(null, 'char'),
 )(set)
+
+// findCharacterInRow :: String -> [Tile] -> [Tile]
+const findCharacterInRow = id => pipe(
+  filter(tile => tile.char !== null && tile.char.id === id),
+  reject(isEmpty),
+)
+
+// findTileWithCharacter :: String -> [[Tile]] -> Tile
+export const findTileWithCharacter = id => pipe(
+  map(findCharacterInRow(id)),
+  reject(isEmpty),
+  flatten,
+  head,
+)
+
+// findTileInRow :: (Number, Number) -> [Tile] -> [Tile]
+const findTileInRow = (x, y) => pipe(
+  filter(hasCoordinates(x, y)),
+  reject(isEmpty),
+)
+
+// findTileByCoordinates :: (Number, Number) -> [[Tile]] -> Tile
+export const findTileByCoordinates = (x, y) => pipe(
+  map(findTileInRow(x, y)),
+  reject(isEmpty),
+  flatten,
+  head,
+  defaultTo({ x: null, y: null, char: null, locked: true })
+)
+
+// getWinTileA :: [[Tile]] -> Tile
+export const getWinTileA = findTileByCoordinates(1, 4)
+
+// geWinTileB :: [[Tile]] -> Tile
+export const getWinTileB = findTileByCoordinates(3, 4)

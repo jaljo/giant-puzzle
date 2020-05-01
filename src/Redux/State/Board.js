@@ -58,7 +58,6 @@ export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
 export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOVE'
 export const DESTINATION_TILE_FOUND = '@giant-puzzle/Board/DESTINATION_TILE_FOUND'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
-export const MEH = '@giant-puzzle/Board/MEH'
 export const CLEAR = '@giant-puzzle/Board/CLEAR'
 
 // arrowKeyPressed :: direction
@@ -91,17 +90,14 @@ export const destinationTileFound = (id, direction, tile) => ({
   tile,
 })
 
-// moveCharacter :: (String, String, Number, Number) -> Action
-export const moveCharacter = (id, direction, x, y) => ({
+// moveCharacter :: (String, String, Tile) -> Action
+export const moveCharacter = ({ id, direction, tile }) => ({
   type: MOVE_CHARACTER,
   id,
   direction,
-  x,
-  y,
+  x: tile.x,
+  y: tile.y,
 })
-
-// meh :: String -> Action
-export const meh = () => ({ type: MEH })
 
 // retry :: () -> Action
 export const clear = () => ({ type: CLEAR })

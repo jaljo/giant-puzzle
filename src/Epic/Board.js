@@ -1,6 +1,12 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, filter, withLatestFrom, mergeMap, switchMap, ignoreElements, tap } from 'rxjs/operators'
+import {
+  filter,
+  map,
+  mergeMap,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators'
 import {
   findTileByCoordinates,
   findTileWithCharacter,
@@ -18,7 +24,6 @@ import {
   allPass,
   complement,
   filter as rfilter,
-  ifElse,
   isEmpty,
   isNil,
   map as rmap,
@@ -37,7 +42,6 @@ import {
   arrowKeyPressed,
   clear,
   destinationTileFound,
-  meh,
   moveCharacter,
   requestMainCharMove,
   requestRegularGuardMove,
@@ -70,13 +74,6 @@ export const everyTileIsGuarded = pipe(
 
 // tileIsFree :: Tile :: Boolean
 const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
-
-// moveCharacterOrMeh :: Action.DESTINATION_TILE_FOUND -> Action.MOVE_CHARACTER Action.MEH
-const moveCharacterOrMeh = ifElse(
-  o(tileIsFree, prop('tile')),
-  a => moveCharacter(a.id, a.direction, a.tile.x, a.tile.y),
-  meh,
-)
 
 // keyEventtileonEpic :: Epic -> Observable Action ARROW_KEY_PRESSED
 const keyEventToMoveActionEpic = (_, state$) =>
@@ -124,7 +121,8 @@ export const moveMainCharacterEpic = action$ =>
   action$.pipe(
     ofType(DESTINATION_TILE_FOUND),
     filter(isMainChar),
-    map(moveCharacterOrMeh),
+    filter(o(tileIsFree, prop('tile'))),
+    map(moveCharacter),
   )
 
 // requestRegularGuardianMoveEpic :: Epic -> REQUEST_CHARACTER_MOVE
@@ -160,7 +158,10 @@ export const moveGuardiansEpic = action$ =>
     ),
   ).pipe(
     filter(([ a1, a2 ]) => hasDistinctCoordinates(a1.tile, a2.tile)),
-    mergeMap(rmap(moveCharacterOrMeh)),
+    mergeMap(pipe(
+      rfilter(o(tileIsFree, prop('tile'))),
+      rmap(moveCharacter),
+    )),
   )
 
 // gameOverEpic :: Epic -> Observable Action GAME_OVER
