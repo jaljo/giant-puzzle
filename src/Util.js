@@ -10,6 +10,7 @@ import {
   includes,
   isEmpty,
   map,
+  pathEq,
   pipe,
   prop,
   propOr,
@@ -102,7 +103,7 @@ export const getCharByCoordinates = set => (x, y) => pipe(
 
 // findCharacterInRow :: String -> [Tile] -> [Tile]
 const findCharacterInRow = id => pipe(
-  filter(tile => tile.char !== null && tile.char.id === id),
+  filter(pathEq(['char', 'id'], id)),
   reject(isEmpty),
 )
 
