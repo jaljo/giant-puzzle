@@ -5,7 +5,6 @@ describe('Redux :: Module', () => {
     const state = Module.default()
 
     expect(state.Board).toBeDefined()
-    expect(state.Game).toBeDefined()
   })
 
   it('contains the Game state', () => {
