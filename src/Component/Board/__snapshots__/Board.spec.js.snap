@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Component/Board renders a board with an empty tile and a tile with a character 1`] = `
+exports[`Component :: Board renders a board with an empty tile and a tile with a character 1`] = `
 <div
   data-is="main-board"
 >

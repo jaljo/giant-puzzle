@@ -1,53 +1,60 @@
 import {
+  __,
+  always,
+  complement,
   defaultTo,
   filter,
+  find,
   flatten,
   head,
   identity,
+  ifElse,
+  includes,
   isEmpty,
   map,
+  pathEq,
   pipe,
   prop,
   propOr,
   reject,
+  replace,
+  toLower,
 } from 'ramda'
+
+/**
+ * Redux utilities
+ */
 
 // createReducer :: (State, Object) -> (State, Action) -> State
 export const createReducer = (initialState, handlers) =>
   (state = initialState, action = {}) =>
     propOr(identity, prop('type', action), handlers)(state, action)
 
-// findCharacterInLine :: String -> [Tile] -> [Tile]
-const findCharacterInLine = characterId => pipe(
-  filter(tile => tile.char !== null && tile.char.id === characterId),
-  reject(isEmpty),
-)
+/**
+ * Coordinates utilities
+ */
 
-// findTileWithCharacter :: String -> [[Tile]] -> Tile
-export const findTileWithCharacter = characterId => pipe(
-  map(findCharacterInLine(characterId)),
-  reject(isEmpty),
-  flatten,
-  head,
-)
+// isGoal :: (Number, Number) -> Boolean
+export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
 
-// findTileInLine :: Coordinates -> [Tile] -> [Tile]
-const findTileInLine = coord => pipe(
-  filter(tile => tile.x === coord.x && tile.y === coord.y),
-  reject(isEmpty),
-)
+// hasCoordinates :: (Number, Number) -> Object -> Boolean
+export const hasCoordinates = (x, y) => obj => obj.x === x && obj.y === y
 
-// findTileByCoordinates :: Coordinates -> [[Tile]] -> Tile
-export const findTileByCoordinates = coord => pipe(
-  map(findTileInLine(coord)),
-  reject(isEmpty),
-  flatten,
-  head,
-  defaultTo({ x: null, y: null, char: null, locked: true })
-)
+// haveDistinctCoordinates :: (Object, Object) -> Boolean
+export const haveDistinctCoordinates = (a, b) => (a.x !== b.x) || (a.y !== b.y)
 
-export const getWinTileA = findTileByCoordinates({ x: 1, y: 4 })
-export const getWinTileB = findTileByCoordinates({ x: 3, y: 4 })
+const transformMap = {
+  'up':    (x, y) => [ x, y+1 ],
+  'left':  (x, y) => [ x-1, y ],
+  'down':  (x, y) => [ x, y-1 ],
+  'right': (x, y) => [ x+1, y ],
+}
+
+// getNextDirection :: (Number, Number, String) -> (Number, Number)
+export const getNextDirection = (x, y, direction) => pipe(
+  prop(direction),
+  transformer => transformer(x, y),
+)(transformMap)
 
 // getOppositeDirection :: String -> String
 export const getOppositeDirection = direction => prop(direction, {
@@ -57,5 +64,85 @@ export const getOppositeDirection = direction => prop(direction, {
   left: 'right',
 })
 
-// isGoal :: (Number, Number) -> Boolean
-export const isGoal = (x , y) => y === 4 && (x === 1 || x === 3)
+/**
+ * KeyboardEvents utilities
+ */
+
+// isArrowKeyPressed :: KeyboardEvent -> Boolean
+export const isArrowKeyPressed = pipe(
+  prop('key'),
+  includes(__, ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']),
+)
+
+// keyboardEventToDirection :: KeyboardEvent -> String
+export const keyboardEventToDirection = pipe(
+  prop('key'),
+  toLower,
+  replace('arrow', ''),
+)
+
+/**
+ * Tile utilities
+ */
+
+// removeCharIdentifiedBy :: String -> Tile -> Maybe Character
+const removeCharIdentifiedBy = id => ifElse(
+  pathEq(['char', 'id'], id),
+  always(null),
+  prop('char'),
+)
+
+// @see Util.spec.js for concrete usage examples
+// moveCharToTile :: ([[Tile]], String, Number, Number) -> Tile -> Maybe Character
+export const moveCharToTile = (rows, id, x, y) => ifElse(
+  hasCoordinates(x, y),
+  () => findTileWithCharacter(id)(rows).char,
+  removeCharIdentifiedBy(id)
+)
+
+// coordsExistsInTileSet :: [Tile] -> (Number, Number) -> Boolean
+export const coordsExistsInTileSet = set => (x, y) => pipe(
+  filter(hasCoordinates(x, y)),
+  complement(isEmpty),
+)(set)
+
+// getCharByCoordinates :: [Tile] -> (Number, Number) -> Maybe Character
+export const getCharByCoordinates = set => (x, y) => pipe(
+  find(hasCoordinates(x, y)),
+  propOr(null, 'char'),
+)(set)
+
+// findCharacterInRow :: String -> [Tile] -> [Tile]
+const findCharacterInRow = id => pipe(
+  filter(pathEq(['char', 'id'], id)),
+  reject(isEmpty),
+)
+
+// findTileWithCharacter :: String -> [[Tile]] -> Tile
+export const findTileWithCharacter = id => pipe(
+  map(findCharacterInRow(id)),
+  reject(isEmpty),
+  flatten,
+  head,
+)
+
+// findTileInRow :: (Number, Number) -> [Tile] -> [Tile]
+const findTileInRow = (x, y) => pipe(
+  filter(hasCoordinates(x, y)),
+  reject(isEmpty),
+)
+
+// findTileByCoordinates :: (Number, Number) -> [[Tile]] -> Tile
+export const findTileByCoordinates = (x, y) => pipe(
+  map(findTileInRow(x, y)),
+  reject(isEmpty),
+  flatten,
+  head,
+  defaultTo({ x: null, y: null, char: null, locked: true })
+)
+
+// getWinTileA :: [[Tile]] -> Tile
+export const getWinTileA = findTileByCoordinates(1, 4)
+
+// geWinTileB :: [[Tile]] -> Tile
+export const getWinTileB = findTileByCoordinates(3, 4)

@@ -2,7 +2,7 @@ import React from 'react'
 import renderer from 'react-test-renderer'
 import Character from './Character'
 
-describe('Component/Character', () => {
+describe('Component :: Character', () => {
   it('renders a character component', () => {
     const state = {
       direction: 'up',

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Component/RightPanel renders the game over message when the game is lost 1`] = `
+exports[`Component :: RightPanel renders the game over message when the game is lost 1`] = `
 <div
   data-is="right-panel"
 >
@@ -17,7 +17,7 @@ exports[`Component/RightPanel renders the game over message when the game is los
 </div>
 `;
 
-exports[`Component/RightPanel renders the welcome message when the game is neither won or lost 1`] = `
+exports[`Component :: RightPanel renders the welcome message when the game is neither won or lost 1`] = `
 <div
   data-is="right-panel"
 >
@@ -63,7 +63,7 @@ exports[`Component/RightPanel renders the welcome message when the game is neith
      en même temps !
   </p>
   <p>
-    Prends bien garde à ne pas te faire manger où tu devra reccomencer !
+    Prends bien garde à ne pas te faire manger ou tu devras recommencer !
   </p>
   <button
     className="retry"
@@ -73,7 +73,7 @@ exports[`Component/RightPanel renders the welcome message when the game is neith
 </div>
 `;
 
-exports[`Component/RightPanel renders the win message when the game is won 1`] = `
+exports[`Component :: RightPanel renders the win message when the game is won 1`] = `
 <div
   data-is="right-panel"
 >

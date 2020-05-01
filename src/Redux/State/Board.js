@@ -1,314 +1,131 @@
 import {
+  coordsExistsInTileSet,
   createReducer,
-  findTileWithCharacter,
   getOppositeDirection,
-} from '../../Util'
-import { includes, __ } from 'ramda'
+  moveCharToTile,
+} from './../../Util'
+import {
+  getCharInitialPos,
+  isRegularCharacter,
+  MAIN_CHARACTER,
+  GUARDIAN_REGULAR,
+  GUARDIAN_REVERSE,
+} from './Characters'
+import {
+  map,
+  reverse,
+  pipe,
+} from 'ramda'
 
-export const MAIN_CHARACTER = {
-  id: 'main-character',
-  image: 'https://image.flaticon.com/icons/svg/2754/2754522.svg',
-  asset: 'chick',
-  direction: 'up',
-}
+const BOARD_ROWS = [0, 1, 2, 3, 4, 5]
+const BOARD_COLS = [0, 1, 2, 3, 4]
+const LOCKED_TILES = [
+  { x: 2, y: 5 },
+  { x: 0, y: 2 },
+  { x: 4, y: 2 },
+  { x: 0, y: 1 },
+  { x: 4, y: 1 },
+  { x: 0, y: 0 },
+  { x: 1, y: 0 },
+  { x: 3, y: 0 },
+  { x: 4, y: 0 },
+]
 
-export const GUARDIAN_REGULAR = {
-  id: 'guardian-regular',
-  image: 'https://image.flaticon.com/icons/svg/562/562802.svg',
-  asset: 'fox',
-  direction: 'up',
-}
+// isLocked :: (Number, Number) -> Boolean
+const isLocked = coordsExistsInTileSet(LOCKED_TILES)
 
-export const GUARDIAN_REVERSE = {
-  id: 'guardian-reverse',
-  image: 'https://image.flaticon.com/icons/svg/2699/2699064.svg',
-  asset: 'fox',
-  direction: 'down',
-}
+// createTile :: (Number, Number) -> Tile
+const createTile = (x, y ) => ({
+  x,
+  y,
+  char: getCharInitialPos(x, y),
+  locked: isLocked(x, y),
+})
 
-export const INITIAL_STATE = {
-  gameOver: false,
-  winGame: false,
-  lines: [
-    // l6
-    [
-      {
-        x: 0,
-        y: 5,
-        char: null,
-        locked: false,
-      }, {
-        x: 1,
-        y: 5 ,
-        char: GUARDIAN_REVERSE,
-        locked: false,
-      }, {
-        x: 2,
-        y: 5,
-        char: null,
-        locked: true,
-      }, {
-        x: 3,
-        y: 5 ,
-        char: null,
-        locked: false,
-      }, {
-        x: 4,
-        y: 5,
-        char: null,
-        locked: false,
-      }
-    ],
-    // l5
-    [
-      {
-        x: 0,
-        y: 4,
-        char: null,
-        locked: false,
-      }, {
-        x: 1,
-        y: 4 ,
-        char: null,
-        locked: false,
-      }, {
-        x: 2,
-        y: 4,
-        char: null,
-        locked: false,
-      }, {
-        x: 3,
-        y: 4 ,
-        char: null,
-        locked: false,
-      }, {
-        x: 4,
-        y: 4,
-        char: null,
-        locked: false,
-      }
-    ],
-    // l4
-    [
-      {
-        x: 0,
-        y: 3,
-        char: null,
-        locked: false,
-      }, {
-        x: 1,
-        y: 3 ,
-        char: null,
-        locked: false,
-      }, {
-        x: 2,
-        y: 3,
-        char: null,
-        locked: false,
-      }, {
-        x: 3,
-        y: 3 ,
-        char: null,
-        locked: false,
-      }, {
-        x: 4,
-        y: 3,
-        char: null,
-        locked: false,
-      }
-    ],
-    // l3
-    [
-        {
-          x: 0,
-          y: 2,
-          char: null,
-          locked: true,
-        }, {
-          x: 1,
-          y: 2 ,
-          char: null,
-          locked: false,
-        }, {
-          x: 2,
-          y: 2,
-          char: MAIN_CHARACTER,
-          locked: false,
-        }, {
-          x: 3,
-          y: 2 ,
-          char: null,
-          locked: false,
-        }, {
-          x: 4,
-          y: 2,
-          char: null,
-          locked: true,
-        }
-    ],
-    // l2
-    [
-        {
-          x: 0,
-          y: 1,
-          char: null,
-          locked: true,
-        }, {
-          x: 1,
-          y: 1,
-          char: null,
-          locked: false,
-        }, {
-          x: 2,
-          y: 1,
-          char: null,
-          locked: false,
-        }, {
-          x: 3,
-          y: 1 ,
-          char: null,
-          locked: false,
-        }, {
-          x: 4,
-          y: 1,
-          char: null,
-          locked: true,
-        }
-    ],
-    // l1
-    [
-        {
-          x: 0,
-          y: 0,
-          char: null,
-          locked: true,
-        }, {
-          x: 1,
-          y: 0,
-          char: null,
-          locked: true,
-        }, {
-          x: 2,
-          y: 0,
-          char: GUARDIAN_REGULAR,
-          locked: false,
-        }, {
-          x: 3,
-          y: 0,
-          char: null,
-          locked: true,
-        }, {
-          x: 4,
-          y: 0,
-          char: null,
-          locked: true,
-        }
-    ],
-  ]
-}
+// buildBoardInitialState :: [Number] -> [Number] -> [[Tile]]
+const buildBoardInitialState = columns => pipe(
+  map(rowId => map(
+    colId => createTile(colId, rowId),
+    columns
+  )),
+  reverse,
+)
 
+// @see Board.spec.js.snap for a concrete representation of the state
+export const INITIAL_STATE = buildBoardInitialState(BOARD_COLS)(BOARD_ROWS)
+
+// action types
 export const ARROW_KEY_PRESSED = '@giant-puzzle/Board/ARROW_KEY_PRESSED'
 export const REQUEST_CHARACTER_MOVE = '@giant-puzzle/Board/REQUEST_CHARACTER_MOVE'
-export const NEXT_COORDINATES_OBTAINED = '@giant-puzzle/Board/NEXT_COORDINATES_OBTAINED'
+export const DESTINATION_TILE_FOUND = '@giant-puzzle/Board/DESTINATION_TILE_FOUND'
 export const MOVE_CHARACTER = '@giant-puzzle/Board/MOVE_CHARACTER'
-export const MEH = '@giant-puzzle/Board/MEH'
-export const GAME_OVER = '@giant-puzzle/Board/GAME_OVER'
-export const WIN_GAME = '@giant-puzzle/Board/WIN_GAME'
-export const RETRY = '@giant-puzzle/Board/RETRY'
+export const CLEAR = '@giant-puzzle/Board/CLEAR'
 
-// arrowKeyPressed :: direction
+// arrowKeyPressed :: String -> Action
 export const arrowKeyPressed = direction => ({
   type: ARROW_KEY_PRESSED,
   direction,
 })
 
-// requestCharacterMove :: (String, String) -> Action
-export const requestCharacterMove = (characterId, direction) => ({
+// requestCharacterMove :: String -> String -> Action
+const requestCharacterMove = id => direction => ({
   type: REQUEST_CHARACTER_MOVE,
-  characterId,
+  id,
   direction,
 })
 
-// nextCoordinatesObtained :: (String, String, Tile) -> Action
-export const nextCoordinatesObtained = (characterId, direction, targetTile) => ({
-  type: NEXT_COORDINATES_OBTAINED,
-  characterId,
+// requestMainCharMove :: String -> Action
+export const requestMainCharMove = requestCharacterMove(MAIN_CHARACTER.id)
+
+// requestRegularGuardMove :: String -> Action
+export const requestRegularGuardMove = requestCharacterMove(GUARDIAN_REGULAR.id)
+
+// requestReverseGuardMove :: String -> Action
+export const requestReverseGuardMove = requestCharacterMove(GUARDIAN_REVERSE.id)
+
+// destinationTileFound :: (String, String, Tile) -> Action
+export const destinationTileFound = (id, direction, tile) => ({
+  type: DESTINATION_TILE_FOUND,
+  id,
   direction,
-  targetTile,
+  tile,
 })
 
-// moveCharacter :: (String, String -> Coordinates) -> Action
-export const moveCharacter = (characterId, direction, coordinates) => ({
+// moveCharacter :: Action.DESTINATION_TILE_FOUND -> Action
+export const moveCharacter = ({ id, direction, tile }) => ({
   type: MOVE_CHARACTER,
-  characterId,
+  id,
   direction,
-  coordinates,
+  x: tile.x,
+  y: tile.y,
 })
-
-// meh :: String -> Action
-export const meh = () => ({ type: MEH })
-
-// gameOver :: () -> Action
-export const gameOver = () => ({ type: GAME_OVER })
-
-// winGame :: () -> Action
-export const winGame = () => ({ type: WIN_GAME })
 
 // retry :: () -> Action
-export const retry = () => ({ type: RETRY })
-
-const isRegular = includes(__, [MAIN_CHARACTER.id, GUARDIAN_REGULAR.id])
+export const clear = () => ({ type: CLEAR })
 
 export default createReducer(INITIAL_STATE, {
-  [ARROW_KEY_PRESSED]: (state, { direction }) => ({
-    ...state,
-    lines: state.lines.map(
-      line => line.map(tile => ({
-        ...tile,
-        char: tile.char === null
-          ? null
-          : {
-            ...tile.char,
-            direction: isRegular(tile.char.id)
-              ? direction
-              : getOppositeDirection(direction)
-            ,
-          }
-        ,
-      }))
-    ),
-  }),
+  [ARROW_KEY_PRESSED]: (state, { direction }) => state.map(
+    line => line.map(tile => ({
+      ...tile,
+      char: tile.char === null
+        ? null
+        : {
+          ...tile.char,
+          direction: isRegularCharacter(tile.char.id)
+            ? direction
+            : getOppositeDirection(direction)
+          ,
+        }
+      ,
+    }))
+  ),
 
-  [MOVE_CHARACTER]: (state, { characterId, coordinates }) => ({
-    ...state,
-    lines: state.lines.map(
-      line => line.map(tile => ({
-        ...tile,
-        char: resolveCharacter(state.lines, tile, coordinates, characterId),
-      }))
-    ),
-  }),
+  [MOVE_CHARACTER]: (state, { id, x, y }) => state.map(
+    line => line.map(tile => ({
+      ...tile,
+      char: moveCharToTile(state, id, x, y)(tile),
+    }))
+  ),
 
-  [GAME_OVER]: state => ({
-    ...state,
-    gameOver: true,
-  }),
-
-  [WIN_GAME]: state => ({
-    ...state,
-    winGame: true,
-  }),
-
-  [RETRY]: () => INITIAL_STATE,
+  [CLEAR]: () => INITIAL_STATE,
 })
-
-// move character on the target slide, remove it from the initial slide
-// dont do anything for tiles with other characters on
-//
-// resolveCharacter :: ([[Tile]], Tile, Coordinates, String) -> Maybe Character
-export const resolveCharacter = (lines, tile, coordinates, characterId) =>
-  (tile.x === coordinates.x && tile.y === coordinates.y)
-    ? findTileWithCharacter(characterId)(lines).char
-    : (tile.char && tile.char.id === characterId)
-      ? null
-      : tile.char

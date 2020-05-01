@@ -8,14 +8,18 @@ import { default as mainReducer, debug } from './Redux/State'
 
 const epicMiddleware = createEpicMiddleware({
   dependencies: {
-    keyMap: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
+    // put dependencies in here
   },
 });
-const middleware     = applyMiddleware(epicMiddleware);
-const reducer        = Number(process.env.REACT_APP_DEBUG_STATE)
+
+const middleware = applyMiddleware(epicMiddleware);
+
+const reducer = Number(process.env.REACT_APP_DEBUG_STATE)
   ? debug(mainReducer)
-  : mainReducer;
-const store          = createStore(reducer, reducer(), middleware);
+  : mainReducer
+;
+
+const store = createStore(reducer, reducer(), middleware);
 
 epicMiddleware.run(rootEpic);
 

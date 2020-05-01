@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 // mapStateToProps :: State -> Props
 const mapStateToProps = state => ({
-  lines: state.Board.lines,
+  lines: state.Board,
 })
 
 // Board :: Props -> React.Component

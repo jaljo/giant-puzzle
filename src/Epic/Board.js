@@ -1,267 +1,224 @@
 import { fromEvent, zip } from 'rxjs'
 import { combineEpics, ofType } from 'redux-observable'
-import { map, filter, withLatestFrom, mergeMap, switchMap } from 'rxjs/operators'
+import {
+  filter,
+  map,
+  mergeMap,
+  switchMap,
+  withLatestFrom,
+} from 'rxjs/operators'
 import {
   findTileByCoordinates,
   findTileWithCharacter,
+  getNextDirection,
+  getOppositeDirection,
   getWinTileA,
   getWinTileB,
-  getOppositeDirection,
+  haveDistinctCoordinates,
+  isArrowKeyPressed,
+  keyboardEventToDirection,
 } from './../Util'
 import {
-  __,
   allPass,
-  apply,
   complement,
-  cond,
-  dec,
   filter as rfilter,
-  evolve,
-  head,
-  ifElse,
-  inc,
-  includes,
   isEmpty,
   isNil,
   map as rmap,
   o,
-  omit,
-  or,
-  path,
+  pick,
   pipe,
   prop,
-  replace,
-  toLower,
+  propOr,
+  values,
 } from 'ramda'
 import {
   ARROW_KEY_PRESSED,
-  GUARDIAN_REGULAR,
-  GUARDIAN_REVERSE,
-  MAIN_CHARACTER,
+  DESTINATION_TILE_FOUND,
   MOVE_CHARACTER,
-  NEXT_COORDINATES_OBTAINED,
   REQUEST_CHARACTER_MOVE,
   arrowKeyPressed,
-  gameOver,
-  meh,
+  clear,
+  destinationTileFound,
   moveCharacter,
-  nextCoordinatesObtained,
-  requestCharacterMove,
-  winGame,
+  requestMainCharMove,
+  requestRegularGuardMove,
+  requestReverseGuardMove,
 } from './../Redux/State/Board'
+import {
+  MAIN_CHARACTER,
+  isGuardian,
+  isMainChar,
+  isRegularGuard,
+  isReverseGuard,
+} from './../Redux/State/Characters'
+import {
+  RETRY,
+  gameOver,
+  winGame,
+} from './../Redux/State/Game'
 
-// isMainCharacterMove :: Action -> Boolean
-const isMainCharacterMove = action => action.characterId === MAIN_CHARACTER.id
-const isRegularGuardianMove = action => action.characterId === GUARDIAN_REGULAR.id
-const isReverseGuardianMove = action => action.characterId === GUARDIAN_REVERSE.id
-
-// isArrowKeyPressed :: [String] -> KeyboardEvent -> Boolean
-const isArrowKeyPressed = keyMap => pipe(
-  prop('key'),
-  includes(__, keyMap),
-)
-
-// keyEventToMoveActionEpic :: Epic -> Observable Action ARROW_KEY_PRESSED
-const keyEventToMoveActionEpic = (action$, state$, { keyMap }) =>
-  fromEvent(window, 'keyup').pipe(
-    filter(isArrowKeyPressed(keyMap)),
-    withLatestFrom(state$),
-    filter(([ _, state ]) => !state.Board.gameOver),
-    filter(([ _, state ]) => !state.Board.winGame),
-    map(pipe(
-      head,
-      prop('key'),
-      toLower,
-      replace('arrow', ''),
-      arrowKeyPressed,
-    )),
-  )
-
-// toLeft :: Tile -> Coordinates
-const toLeft = evolve({ x: dec })
-const toRight = evolve({ x: inc })
-const toUp = evolve({ y: inc })
-const toDown = evolve({ y: dec })
-
-// tileToCoordinates :: Maybe Tile -> Maybe Coordinates
-const tileToCoordinates = omit(['char', 'locked'])
-
-// directionIs :: String -> [Any, Action] -> Boolean
-const directionIs = key => ([ _, action ]) => action.direction === key
-
-// isNotOutOfBounds :: Maybe Tile -> Boolean
+// isNotOutOfBounds :: Tile -> Boolean
 const isNotOutOfBounds = tile => tile.x !== null && tile.y !== null
-
-// isNotGuarded :: Tile -> Boolean
-const isNotGuarded = pipe(
-  path(['char', 'id']),
-  complement(includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id])),
-)
 
 // isNotLocked :: Tile -> Boolean
 const isNotLocked = complement(prop('locked'))
 
-// tileIsFree :: Tile :: Boolean
-const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
-
-// haveNotTheSameDestination :: (Action.NEXT_COORDINATES_OBTAINED, Action.NEXT_COORDINATES_OBTAINED) -> Boolean
-const haveNotTheSameDestination = (a, b) => or(
-  a.targetTile.x !== b.targetTile.x,
-  a.targetTile.y !== b.targetTile.y,
-)
-
-// moveCharacterOrMeh :: Action.NEXT_COORDINATES_OBTAINED -> Action.MOVE_CHARACTER Action.MEH
-const moveCharacterOrMeh = ifElse(
-  o(tileIsFree, prop('targetTile')),
-  action => moveCharacter(
-    action.characterId,
-    action.direction,
-    tileToCoordinates(action.targetTile)
-  ),
-  meh,
-)
-
-// obtainNextCoordinatesEpic :: Epic -> Observable Action NEXT_COORDINATES_OBTAINED
-const obtainNextCoordinatesEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(REQUEST_CHARACTER_MOVE),
-    withLatestFrom(state$),
-    // find the tile where the main character is
-    // Observable [Action, State] -> Observable Tile
-    map(([ action, state ]) => findTileWithCharacter(action.characterId)(state.Board.lines)),
-    withLatestFrom(action$),
-    // compute target coordinates
-    // Observable [Tile, Action] -> Observable Coordinates
-    map(pipe(
-      cond([
-        [directionIs('up'), ([ tile ]) => toUp(tile)],
-        [directionIs('down'), ([ tile ]) => toDown(tile)],
-        [directionIs('left'), ([ tile ]) => toLeft(tile)],
-        [directionIs('right'), ([ tile ]) => toRight(tile)],
-      ]),
-      tileToCoordinates,
-    )),
-    withLatestFrom(state$),
-    // find the tile matching the target coordinates (if any)
-    // Observable [Coordinates, State] -> Observable Tile
-    map(([ coordinates, state ]) => findTileByCoordinates(coordinates)(state.Board.lines)),
-    withLatestFrom(action$),
-    map(([ tile, action ]) => nextCoordinatesObtained(
-      action.characterId,
-      action.direction,
-      tile,
-    )),
-  )
-
-// requestMainCharacterMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
-const requestMainCharacterMoveEpic = action$ =>
-  action$.pipe(
-    ofType(ARROW_KEY_PRESSED),
-    // @TODO inject characters id rather than using them directly
-    map(action => requestCharacterMove(MAIN_CHARACTER.id, action.direction)),
-  )
-
-// moveMainCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
-const moveMainCharacterEpic = action$ =>
-  action$.pipe(
-    ofType(NEXT_COORDINATES_OBTAINED),
-    filter(isMainCharacterMove),
-    map(moveCharacterOrMeh),
-  )
-
-// requestRegularGuardianMoveEpic :: Epic -> REQUEST_CHARACTER_MOVE
-const requestRegularGuardianMoveEpic = action$ =>
-  action$.pipe(
-    ofType(MOVE_CHARACTER),
-    filter(isMainCharacterMove),
-    // @TODO inject characters id rather than using them directly
-    map(action => requestCharacterMove(GUARDIAN_REGULAR.id, action.direction)),
-  )
-
-// requestReverseGuardianMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
-const requestReverseGuardianMoveEpic = action$ =>
-  action$.pipe(
-    ofType(MOVE_CHARACTER),
-    filter(isMainCharacterMove),
-    map(pipe(
-      prop('direction'),
-      getOppositeDirection,
-      // @TODO inject characters id rather than using them directly
-      direction => requestCharacterMove(GUARDIAN_REVERSE.id, direction),
-    )),
-  )
-
-// moveGuardianEpic :: Epic -> [Observable Action *]
-const moveGuardianEpic = action$ =>
-  zip(
-    action$.pipe(
-      ofType(NEXT_COORDINATES_OBTAINED),
-      filter(isRegularGuardianMove),
-    ),
-    action$.pipe(
-      ofType(NEXT_COORDINATES_OBTAINED),
-      filter(isReverseGuardianMove),
-    ),
-  ).pipe(
-    filter(apply(haveNotTheSameDestination)),
-    mergeMap(rmap(moveCharacterOrMeh)),
-  )
-
-// gameOverEpic :: Epic -> Observable Action GAME_OVER
-const gameOverEpic = (action$, state$) =>
-  action$.pipe(
-    ofType(MOVE_CHARACTER),
-    withLatestFrom(state$),
-    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board.lines)),
-    filter(isNil),
-    map(gameOver),
-  )
-
-// charIsGuardian :: Tile -> Boolean
-const charIsGuardian = pipe(
-  path(['char', 'id']),
-  includes(__, [GUARDIAN_REGULAR.id, GUARDIAN_REVERSE.id]),
+// isNotGuarded :: Tile -> Boolean
+const isNotGuarded = pipe(
+  propOr({}, 'char'),
+  complement(isGuardian),
 )
 
 // everyTileIsGuarded :: [Tile] -> Boolean
 export const everyTileIsGuarded = pipe(
-  rfilter(complement(charIsGuardian)),
+  rfilter(isNotGuarded),
   isEmpty,
 )
 
-// winGameEpic :: Epic -> Observable Action WIN_GAME
-const winGameEpic = (action$, state$) =>
+// tileIsFree :: Tile :: Boolean
+export const tileIsFree = allPass([isNotOutOfBounds, isNotLocked, isNotGuarded])
+
+// keyEventtileonEpic :: Epic -> Observable Action ARROW_KEY_PRESSED
+const keyEventToMoveActionEpic = (_, state$) =>
+  fromEvent(window, 'keyup').pipe(
+    filter(isArrowKeyPressed),
+    withLatestFrom(state$),
+    filter(([ _, state ]) => !state.Game.gameOver && !state.Game.winGame),
+    map(([ event ]) => event),
+    map(o(arrowKeyPressed, keyboardEventToDirection)),
+  )
+
+// findDestinationTileEpic :: Epic -> Observable Action DESTINATION_TILE_FOUND
+export const findDestinationTileEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(REQUEST_CHARACTER_MOVE),
+    withLatestFrom(state$),
+    // find the tile current cooordinates of the character
+    // Observable [Action, State] -> Observable [Number, Number]
+    map(pipe(
+      ([ action, state ]) => findTileWithCharacter(action.id)(state.Board),
+      pick(['x', 'y']),
+      values,
+    )),
+    withLatestFrom(action$),
+    // compute target coordinates
+    // Observable [ [Number, Number], Action ] -> Observable [Number, Number]
+    map(([ [ x, y ], action ]) => getNextDirection(x, y, action.direction)),
+    withLatestFrom(state$),
+    // find the tile matching the target coordinates (if any)
+    // Observable [ [Number, Number], State] -> Observable Tile
+    map(([ [ x, y ], state ]) => findTileByCoordinates(x, y)(state.Board)),
+    withLatestFrom(action$),
+    map(([ tile, a ]) => destinationTileFound(a.id, a.direction, tile)),
+  )
+
+// requestMainCharacterMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
+export const requestMainCharacterMoveEpic = action$ =>
+  action$.pipe(
+    ofType(ARROW_KEY_PRESSED),
+    map(o(requestMainCharMove, prop('direction'))),
+  )
+
+// moveMainCharacterEpic :: Epic -> Observable Action MOVE_CHARACTER MEH
+export const moveMainCharacterEpic = action$ =>
+  action$.pipe(
+    ofType(DESTINATION_TILE_FOUND),
+    filter(isMainChar),
+    filter(o(tileIsFree, prop('tile'))),
+    map(moveCharacter),
+  )
+
+// requestRegularGuardianMoveEpic :: Epic -> REQUEST_CHARACTER_MOVE
+export const requestRegularGuardianMoveEpic = action$ =>
   action$.pipe(
     ofType(MOVE_CHARACTER),
-    filter(isMainCharacterMove),
+    filter(isMainChar),
+    map(o(requestRegularGuardMove, prop('direction'))),
+  )
+
+// requestReverseGuardianMoveEpic :: Epic -> Observable Action REQUEST_CHARACTER_MOVE
+export const requestReverseGuardianMoveEpic = action$ =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    filter(isMainChar),
+    map(pipe(
+      prop('direction'),
+      getOppositeDirection,
+      requestReverseGuardMove,
+    )),
+  )
+
+// moveGuardiansEpic :: Epic -> [Observable Action *]
+export const moveGuardiansEpic = action$ =>
+  zip(
+    action$.pipe(
+      ofType(DESTINATION_TILE_FOUND),
+      filter(isRegularGuard),
+    ),
+    action$.pipe(
+      ofType(DESTINATION_TILE_FOUND),
+      filter(isReverseGuard),
+    ),
+  ).pipe(
+    filter(([ a1, a2 ]) => haveDistinctCoordinates(a1.tile, a2.tile)),
+    mergeMap(pipe(
+      rfilter(o(tileIsFree, prop('tile'))),
+      rmap(moveCharacter),
+    )),
+  )
+
+// gameOverEpic :: Epic -> Observable Action GAME_OVER
+export const gameOverEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    withLatestFrom(state$),
+    map(([ _, state ]) => findTileWithCharacter(MAIN_CHARACTER.id)(state.Board)),
+    filter(isNil),
+    map(gameOver),
+  )
+
+// winGameEpic :: Epic -> Observable Action WIN_GAME
+export const winGameEpic = (action$, state$) =>
+  action$.pipe(
+    ofType(MOVE_CHARACTER),
+    filter(isMainChar),
     switchMap(() => zip(
       action$.pipe(
         ofType(MOVE_CHARACTER),
-        filter(a => a.characterId === GUARDIAN_REVERSE.id),
+        filter(isReverseGuard),
       ),
       action$.pipe(
         ofType(MOVE_CHARACTER),
-        filter(a => a.characterId === GUARDIAN_REGULAR.id),
+        filter(isRegularGuard),
       )
     ).pipe(
       withLatestFrom(state$),
       map(([ _, state ]) => [
-        getWinTileA(state.Board.lines),
-        getWinTileB(state.Board.lines),
+        getWinTileA(state.Board),
+        getWinTileB(state.Board),
       ]),
       filter(everyTileIsGuarded),
       map(winGame),
     ))
   )
 
+// resetBoardEpic :: Epic -> Observable Action CLEAN
+export const resetBoardEpic = action$ =>
+  action$.pipe(
+    ofType(RETRY),
+    map(clear),
+  )
+
 export default combineEpics(
   gameOverEpic,
   keyEventToMoveActionEpic,
-  moveGuardianEpic,
+  moveGuardiansEpic,
   moveMainCharacterEpic,
-  obtainNextCoordinatesEpic,
+  findDestinationTileEpic,
   requestMainCharacterMoveEpic,
   requestRegularGuardianMoveEpic,
   requestReverseGuardianMoveEpic,
+  resetBoardEpic,
   winGameEpic,
 )

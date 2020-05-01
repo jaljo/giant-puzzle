@@ -2,7 +2,7 @@ import RightPanel from './RightPanel'
 import React from 'react'
 import renderer from 'react-test-renderer'
 
-describe('Component/RightPanel', () => {
+describe('Component :: RightPanel', () => {
   it('renders the welcome message when the game is neither won or lost', () => {
     const state = {
       gameWon: false,
