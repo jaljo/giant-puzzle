@@ -3,11 +3,11 @@
 div[data-is="game"] {
   display: flex;
   flex-direction: row;
-  transform: scale(.75);
-  margin-top: -4rem;
+  justify-content: center;
+  padding-top: 2rem;
 
   section.game-section {
     flex: 1;
-    padding: 0 2rem;
+    max-width: 710px;
   }
 }

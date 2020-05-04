@@ -8,11 +8,13 @@ export default ({
   lines,
 }) =>
   <div data-is="main-board">
-    {lines.map((line, idx) =>
-      <section data-is="line" key={`line-${idx}`}>
-        {line.map((tile, idx) => <Tile {...tile } key={`tile-${idx}`}/>)}
-      </section>
-    )}
+    <div className="board-wrapper">
+      {lines.map((line, idx) =>
+        <section data-is="line" key={`line-${idx}`}>
+          {line.map((tile, idx) => <Tile {...tile } key={`tile-${idx}`}/>)}
+        </section>
+      )}
+    </div>
   </div>
 
 // Tile :: Props -> React.Component
