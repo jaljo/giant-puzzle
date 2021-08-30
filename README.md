@@ -1,6 +1,7 @@
 # Chicky hunting !
 
-A very simple game I made for the french escape game company [la ligue des gentlemen](https://laliguedesgentlemen.com/).
+A very simple game I made for the french escape game company
+[la ligue des gentlemen](https://laliguedesgentlemen.com/).
 
 Will you succeed in escaping from foxes ?
 

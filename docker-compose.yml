@@ -3,10 +3,11 @@ version: '3.4'
 services:
   app:
     image: node:11.10.1-alpine
-    command: npm run start
+    command: npm run start-js
     volumes:
       - './:/app'
     working_dir: /app
-    user: node
     ports:
       - "3010:3000"
+    stdin_open: true
+    tty: true
