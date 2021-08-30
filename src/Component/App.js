@@ -4,7 +4,7 @@ import Game from './Game'
 import './App.scss'
 
 // App :: Props -> React.Component
-export default ({
+const App = ({
   store,
 }) =>
   <Provider store={store}>
@@ -15,3 +15,5 @@ export default ({
       Design by <a href="https://comigo.itch.io/farm-puzzle-animals">CoMiGo</a>.
     </p>
   </Provider>
+
+export default App
