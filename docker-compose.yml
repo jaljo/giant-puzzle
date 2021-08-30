@@ -2,8 +2,9 @@ version: '3.4'
 
 services:
   app:
-    image: node:11.10.1-alpine
-    command: npm run start-js
+    image: node:16.8.0-alpine3.11
+    command: yarn run start-js
+    user: node
     volumes:
       - './:/app'
     working_dir: /app

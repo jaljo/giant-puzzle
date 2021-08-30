@@ -3,8 +3,8 @@ import Board from './../Board'
 import RightPanel from './../RightPanel'
 import './Game.scss'
 
-// Game :: Props -> React.Component
-export default () =>
+// Game :: () -> React.Component
+const Game = () =>
   <div data-is="game">
     <section className="game-section board">
       <Board />
@@ -13,3 +13,5 @@ export default () =>
       <RightPanel />
     </section>
   </div>
+
+export default Game

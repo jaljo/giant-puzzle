@@ -3,11 +3,11 @@ div[data-is="character"] {
   height: 128px;
 
   &.chick {
-    background-image: url('/images/chicky.png');
+    background-image: url('./../../Assets/images/chicky.png');
   }
 
   &.fox {
-    background-image: url('/images/foxy.png');
+    background-image: url('./../../Assets/images/foxy.png');
   }
 
   &.up {

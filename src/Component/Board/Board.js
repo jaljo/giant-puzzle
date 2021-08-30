@@ -4,7 +4,7 @@ import Character from './../Character'
 import { isGoal } from './../../Util'
 
 // Board :: Props -> React.Component
-export default ({
+const Board = ({
   lines,
 }) =>
   <div data-is="main-board">
@@ -26,3 +26,5 @@ const Tile = ({
   <div data-is="tile">
     {char && <Character {...char} isBurrowed={isGoal(x, y)} />}
   </div>
+
+export default Board

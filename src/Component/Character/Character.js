@@ -2,7 +2,7 @@ import React from 'react'
 import './Character.scss'
 
 // Character :: Props -> React.Component
-export default ({
+const Character = ({
   asset,
   direction,
   isBurrowed,
@@ -12,3 +12,5 @@ export default ({
     className={`${asset} ${direction} ${isBurrowed ? 'is-burrowed' : ''}`}
   >
   </div>
+
+export default Character
