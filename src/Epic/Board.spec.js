@@ -6,7 +6,7 @@ import {
   GUARDIAN_REGULAR,
   GUARDIAN_REVERSE,
 } from './../Redux/State/Characters'
-import { ActionsObservable } from 'redux-observable'
+import { of } from 'rxjs'
 import {
   createStateObservable,
   createTestScheduler,
@@ -56,7 +56,7 @@ describe('Epic :: Board :: utils', () => {
 describe('Epic :: Board :: findDestinationTileEpic', () => {
   it('dispatches DESTINATION_TILE_FOUND_ACTION', done => {
     // original position of main char is (2, 2) and it moves left
-    const action$ = ActionsObservable.of(state.requestMainCharMove('left'))
+    const action$ = of(state.requestMainCharMove('left'))
     const state$ = createStateObservable({ Board: state.INITIAL_STATE })
 
     epic.findDestinationTileEpic(action$, state$)
@@ -77,7 +77,7 @@ describe('Epic :: Board :: findDestinationTileEpic', () => {
 
 describe('Epic :: Board :: requestMainCharacterMoveEpic', () => {
   it('dispatches REQUEST_CHARACTER_MOVE action', done => {
-    const action$ = ActionsObservable.of(state.arrowKeyPressed('left'))
+    const action$ = of(state.arrowKeyPressed('left'))
 
     epic.requestMainCharacterMoveEpic(action$)
       .toPromise(Promise)
@@ -94,7 +94,7 @@ describe('Epic :: Board :: requestMainCharacterMoveEpic', () => {
 describe('Epic :: Board :: moveMainCharacterEpic', () => {
   it('dispatches MOVE_CHARACTER action', done => {
     const mockTile = { x: 1, y: 2, locked: false, char: null }
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.destinationTileFound(MAIN_CHARACTER.id, 'left', mockTile)
     )
 
@@ -113,7 +113,7 @@ describe('Epic :: Board :: moveMainCharacterEpic', () => {
 
   it('dispatches NOTHING if the moved character os not the main one', done => {
     const mockTile = { x: 1, y: 1, locked: false, char: null }
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.destinationTileFound(GUARDIAN_REGULAR.id, 'left', mockTile)
     )
 
@@ -128,7 +128,7 @@ describe('Epic :: Board :: moveMainCharacterEpic', () => {
 
   it('dispatches NOTHING if the destination tile is not valid', done => {
     const mockTile = { x: 1, y: 1, locked: true, char: null }
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.destinationTileFound(MAIN_CHARACTER.id, 'left', mockTile)
     )
 
@@ -144,7 +144,7 @@ describe('Epic :: Board :: moveMainCharacterEpic', () => {
 
 describe('Epic :: Board :: requestRegularGuardianMoveEpic', () => {
   it('dispatches REQUEST_CHARACTER_MOVE action', done => {
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.moveCharacter({
         id: MAIN_CHARACTER.id,
         direction: 'right',
@@ -164,7 +164,7 @@ describe('Epic :: Board :: requestRegularGuardianMoveEpic', () => {
   }, 1000)
 
   it('dispatches NOTHING if the moved character is not the main one', done => {
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.moveCharacter({
         id: GUARDIAN_REGULAR.id,
         direction: 'right',
@@ -184,7 +184,7 @@ describe('Epic :: Board :: requestRegularGuardianMoveEpic', () => {
 
 describe('Epic :: Board :: requestReverseGuardianMoveEpic', () => {
   it('dispatches REQUEST_CHARACTER_MOVE action', done => {
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.moveCharacter({
         id: MAIN_CHARACTER.id,
         direction: 'up',
@@ -205,7 +205,7 @@ describe('Epic :: Board :: requestReverseGuardianMoveEpic', () => {
   }, 1000)
 
   it('dispatches NOTHING if the moved character is not the main one', done => {
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.moveCharacter({
         id: GUARDIAN_REGULAR.id,
         direction: 'right',
@@ -291,7 +291,7 @@ describe('Epic :: Board :: moveGuardiansEpic', () => {
 
 describe('Epic :: Board :: gameOverEpic', () => {
   it('dispatches GAME_OVER action when the main character has been eaten', done => {
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.moveCharacter({ tile: {} })
     )
     const state$ = createStateObservable({
@@ -310,7 +310,7 @@ describe('Epic :: Board :: gameOverEpic', () => {
   }, 1000)
 
   it('dispatches NOTHING when the main character still exists', done => {
-    const action$ = ActionsObservable.of(
+    const action$ = of(
       state.moveCharacter({ tile: {} })
     )
     const state$ = createStateObservable({
@@ -383,7 +383,7 @@ describe('Epic :: Board :: winGameEpic', () => {
 
 describe('Epic :: Board :: resetBoardEpic', () => {
   it('dispatches CLEAR action', done => {
-    const action$ = ActionsObservable.of(game.retry())
+    const action$ = of(game.retry())
 
     epic.resetBoardEpic(action$)
       .toPromise(Promise)

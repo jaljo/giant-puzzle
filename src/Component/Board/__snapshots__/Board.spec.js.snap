@@ -4,20 +4,24 @@ exports[`Component :: Board renders a board with an empty tile and a tile with a
 <div
   data-is="main-board"
 >
-  <section
-    data-is="line"
+  <div
+    className="board-wrapper"
   >
-    <div
-      data-is="tile"
-    />
-    <div
-      data-is="tile"
+    <section
+      data-is="line"
     >
       <div
-        className="fox down "
-        data-is="character"
+        data-is="tile"
       />
-    </div>
-  </section>
+      <div
+        data-is="tile"
+      >
+        <div
+          className="fox down "
+          data-is="character"
+        />
+      </div>
+    </section>
+  </div>
 </div>
 `;
