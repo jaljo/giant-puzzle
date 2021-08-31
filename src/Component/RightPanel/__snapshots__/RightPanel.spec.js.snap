@@ -32,7 +32,7 @@ exports[`Component :: RightPanel renders the welcome message when the game is ne
      et j'ai une mauvaise nouvelle pour toi, tu t'es transformé en poussin 
     <img
       alt="chick"
-      src="/images/chick_face.png"
+      src="chick_face.png"
     />
      !
   </p>
@@ -40,12 +40,12 @@ exports[`Component :: RightPanel renders the welcome message when the game is ne
     Fais tomber les renards 
     <img
       alt="fox"
-      src="/images/fox_face.png"
+      src="fox_face.png"
     />
      dans leurs terriers 
     <img
       alt="burrow"
-      src="/images/burrow.png"
+      src="burrow.png"
     />
      grâce aux flèches de ton clavier.
   </p>
@@ -53,12 +53,12 @@ exports[`Component :: RightPanel renders the welcome message when the game is ne
     Pour réussir, les deux renards 
     <img
       alt="fox"
-      src="/images/fox_face.png"
+      src="fox_face.png"
     />
      doivent être dans leurs terriers 
     <img
       alt="goal"
-      src="/images/goal.png"
+      src="goal.png"
     />
      en même temps !
   </p>
